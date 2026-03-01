@@ -35,6 +35,7 @@
 
   let speed = 260;           // px/s
   let obstacles = [];        // 多障碍
+  let burstChance = 0.12
   let nextSpawnX = 0;        // 下次生成位置（像“路程”一样推进）
   let cloudOffset = 0;       // 云的时间偏移
 
@@ -64,23 +65,46 @@
   }
 
   // ===== Uneven obstacle spacing =====
-  function nextGapPx(){
-    // 速度越快，平均间距略增（避免后期太难/太密）
-    const base = 100 + (speed - 260) * 0.12;
-    const jitter = 100 * Math.random();
+  function updateDifficulty(){
+  // d: 0~1，0=最松，1=最密
+  // 你可以把 40 改成 50：会更“慢热”
+  const d = Math.max(0, Math.min(1, score / 40));
 
-    // 25%：超长空档
-    if(Math.random() < 0.25){
-      return base + jitter + 260 + Math.random()*320;
-    }
-    // 20%：短空档
-    if(Math.random() < 0.20){
-      return base*0.55 + Math.random()*140;
-    }
-    // 普通空档
-    return base + jitter;
+  // 速度：缓慢上升（别太快，不然会“突然变难”）
+  speed = Math.min(520, 260 + 160 * d); // 260 -> 420（后面还会被passed加速一点点）
+
+  // 连发概率：前期少，后期多
+  burstChance = 0.12 + 0.22 * d; // 0.12 -> 0.34
+
+  return d;
+}
+ function nextGapPx(){
+  const d = updateDifficulty(); // 0~1
+
+  // base/jitter：d 越大越小 => 更密
+  // 前期：base≈220~260，后期：base≈110~140
+  const base = 230 - 110 * d;                 // 230 -> 120
+  const jitter = (240 - 140 * d) * Math.random(); // 240 -> 100
+
+  // 概率：前期更容易出现长空档；后期更多短空档
+  const longChance = 0.28 - 0.20 * d;  // 0.28 -> 0.08
+  const shortChance = 0.12 + 0.28 * d; // 0.12 -> 0.40
+
+  const r = Math.random();
+
+  // 长空档（前期多，后期少）
+  if(r < longChance){
+    return base + jitter + (340 - 180*d) + Math.random()*(360 - 220*d);
   }
 
+  // 短空档（后期明显变多）
+  if(r < longChance + shortChance){
+    return base*0.55 + Math.random()*(160 - 60*d);
+  }
+
+  // 常规空档
+  return base + jitter;
+}
   function spawnObstacleAt(xStart){
     const type = Math.random() < 0.5 ? 'flower' : 'rock';
 
@@ -104,7 +128,7 @@
     nextSpawnX = xStart + nextGapPx();
 
     // 18%：紧凑连发（让节奏更“不平均”）
-    if(Math.random() < 0.18){
+    if(Math.random() < burstChance){
       const tight = 60 + Math.random()*80; // 60~140px
       const t2 = Math.random() < 0.5 ? 'flower' : 'rock';
       const w2 = 22 + Math.random()*18;
