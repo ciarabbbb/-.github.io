@@ -1,23 +1,3 @@
-<!--
-Save as: index.html
-
-Required images:
-  /assets/img/texture.jpg
-  /assets/img/portal-world.jpg
-  /assets/img/portal-characters.jpg
-  /assets/img/portal-other.jpg
-
-Suggested (create these pages to avoid 404):
-  /log/index.html
-  /nav/index.html
-  /about/index.html
-  /world/index.html
-  /characters/index.html
-  /other/index.html
-  /gallery/index.html
-  /characters/quick.html
-  /contact/index.html
--->
 <!doctype html>
 <html lang="zh-CN">
 <head>
@@ -28,14 +8,16 @@ Suggested (create these pages to avoid 404):
 
   <style>
     :root{
-      --bg0:#070a10;
-      --gold:#d6b36a;
-      --jade:#8fb8a8;
-      --line:rgba(255,255,255,.16);
-      --line2:rgba(255,255,255,.10);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.74);
-      --shadow: 0 20px 60px rgba(0,0,0,.45);
+      /* 调高了背景基础亮度 */
+      --bg0:#0f141d; 
+      --gold:#e2c68a;
+      --jade:#a8ccbe;
+      /* 提升线条透明度使其更亮 */
+      --line:rgba(255,255,255,.25);
+      --line2:rgba(255,255,255,.18);
+      --text:rgba(255,255,255,1);
+      --muted:rgba(255,255,255,.85);
+      --shadow: 0 20px 60px rgba(0,0,0,.3);
       --radius: 22px;
     }
 
@@ -45,11 +27,13 @@ Suggested (create these pages to avoid 404):
     body{
       margin:0;
       color:var(--text);
+      /* 调整渐变色权重，增加光晕亮度 */
       background:
-        radial-gradient(900px 600px at 15% 0%, rgba(143,184,168,.12), transparent 55%),
-        radial-gradient(900px 600px at 85% 10%, rgba(214,179,106,.12), transparent 58%),
-        linear-gradient(180deg, var(--bg0), #06070b 60%, #06070b);
-      font-family: "FangSong","STFangsong","Songti SC","STSong","Noto Serif SC","Source Han Serif SC",serif;
+        radial-gradient(1000px 700px at 15% 0%, rgba(143,184,168,.20), transparent 60%),
+        radial-gradient(1000px 700px at 85% 10%, rgba(214,179,106,.20), transparent 65%),
+        linear-gradient(180deg, var(--bg0), #131821 60%, #131821);
+      /* 字体修改：将宋体类字体排在最前面 */
+      font-family: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", "SimSun", "新宋体", serif;
       overflow-x:hidden;
     }
     a{ color:inherit; text-decoration:none; }
@@ -67,35 +51,36 @@ Suggested (create these pages to avoid 404):
       content:"";
       position:absolute; inset:0;
       background:
-        radial-gradient(1200px 520px at 50% 20%, rgba(255,255,255,.08), transparent 62%),
-        radial-gradient(900px 420px at 20% 70%, rgba(143,184,168,.08), transparent 60%),
-        radial-gradient(900px 420px at 85% 75%, rgba(214,179,106,.08), transparent 60%),
-        linear-gradient(180deg, rgba(6,8,12,.62), rgba(6,8,12,.78)),
+        radial-gradient(1200px 520px at 50% 20%, rgba(255,255,255,.15), transparent 65%),
+        radial-gradient(900px 420px at 20% 70%, rgba(143,184,168,.12), transparent 60%),
+        radial-gradient(900px 420px at 85% 75%, rgba(214,179,106,.12), transparent 60%),
+        linear-gradient(180deg, rgba(15,20,29,.4), rgba(15,20,29,.6)),
         url("assets/img/texture.jpg");
-      background-size: auto, auto, auto, auto, 900px;  /* texture density */
+      background-size: auto, auto, auto, auto, 900px;
       background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
       background-position: center, center, center, center, center;
-      filter: contrast(105%) saturate(92%);
+      filter: contrast(100%) saturate(100%);
     }
 
     /* ===== Glass frame ===== */
     .frame{
       position:relative;
       width:min(1080px, 100%);
-      border: 1px solid var(--line2);
+      border: 1px solid rgba(255,255,255,.25);
       border-radius: calc(var(--radius) + 10px);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      background: rgba(10,12,18,.40);
+      backdrop-filter: blur(12px);
+      /* 提高面板背景亮度 */
+      background: rgba(255,255,255,.08); 
       overflow:hidden;
     }
 
     .corner{
       position:absolute;
       width: 90px; height: 90px;
-      border: 1px solid rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.3);
       border-radius: 18px;
-      opacity:.45;
+      opacity:.6;
       pointer-events:none;
     }
     .corner.tl{ top:14px; left:14px; border-right:none; border-bottom:none; }
@@ -117,9 +102,9 @@ Suggested (create these pages to avoid 404):
       justify-content:space-between;
       gap:12px;
       padding: 12px 14px;
-      border: 1px solid rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.2);
       border-radius: 999px;
-      background: rgba(255,255,255,.06);
+      background: rgba(255,255,255,.12);
     }
     .mark{
       display:flex; align-items:center; gap:10px;
@@ -128,24 +113,19 @@ Suggested (create these pages to avoid 404):
     .seal{
       width: 28px; height: 28px;
       border-radius: 50%;
-      border: 1px solid rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.4);
       background:
-        radial-gradient(circle at 30% 30%, rgba(214,179,106,.30), transparent 55%),
-        radial-gradient(circle at 70% 70%, rgba(143,184,168,.24), transparent 55%),
-        rgba(255,255,255,.05);
-      box-shadow: 0 10px 20px rgba(0,0,0,.25);
+        radial-gradient(circle at 30% 30%, rgba(214,179,106,.40), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(143,184,168,.35), transparent 55%),
+        rgba(255,255,255,.1);
+      box-shadow: 0 5px 15px rgba(0,0,0,.2);
       display:grid; place-items:center;
-    }
-    .markText{
-      line-height:1.1;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
     }
     .markText b{
       letter-spacing:.20em;
       font-size: 13px;
       font-weight: 700;
+      color: #fff;
     }
     .markText small{
       display:block;
@@ -161,29 +141,32 @@ Suggested (create these pages to avoid 404):
     .pill{
       padding: 8px 12px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.08);
       color: var(--muted);
       font-size: 12px;
       letter-spacing:.08em;
-      transition: transform .15s ease, background .15s ease, border-color .15s ease, color .15s ease;
+      transition: all .2s ease;
     }
     .pill:hover{
       transform: translateY(-1px);
-      background: rgba(255,255,255,.07);
-      border-color: rgba(255,255,255,.22);
-      color: var(--text);
+      background: rgba(255,255,255,.15);
+      border-color: rgba(255,255,255,.4);
+      color: #fff;
     }
 
     /* ===== Title block ===== */
     .titleBlock{ text-align:center; padding: 10px 8px 0; }
     .mainTitle{
-  margin: 10px 0 8px;
-  font-size: clamp(44px, 6vw, 72px);
-  letter-spacing:.25em;
-  font-weight: 800;
-  font-family: "Songti SC", "STSong", serif;
-}
+      margin: 10px 0 8px;
+      font-size: clamp(44px, 6vw, 72px);
+      letter-spacing:.25em;
+      font-weight: 800;
+      /* 强制标题使用宋体 */
+      font-family: "Songti SC", "STSong", serif;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(255,255,255,.2);
+    }
     .subTitle{
       margin:0;
       color: var(--muted);
@@ -196,19 +179,14 @@ Suggested (create these pages to avoid 404):
       display:flex;
       align-items:center;
       gap:14px;
-      color: rgba(255,255,255,.55);
+      color: rgba(255,255,255,.6);
     }
     .divider::before,
     .divider::after{
       content:"";
       height:1px;
       flex:1;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.26), transparent);
-    }
-    .divider span{
-      font-size: 12px;
-      letter-spacing:.18em;
-      opacity:.92;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
     }
 
     /* ===== Portals ===== */
@@ -220,52 +198,45 @@ Suggested (create these pages to avoid 404):
       padding: 6px 6px 0;
     }
     .portal{
-      border: 1px solid rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.2);
       border-radius: var(--radius);
-      background: rgba(10,12,18,.40);
+      background: rgba(255,255,255,.05);
       overflow:hidden;
       position:relative;
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      transition: all .2s ease;
       min-height: 260px;
     }
     .portal:hover{
-      transform: translateY(-2px);
-      border-color: rgba(255,255,255,.24);
-      background: rgba(10,12,18,.54);
+      transform: translateY(-3px);
+      border-color: rgba(255,255,255,.4);
+      background: rgba(255,255,255,.1);
     }
 
     .portalTop{
       position:relative;
       height: 118px;
       overflow:hidden;
-      border-bottom: 1px solid rgba(255,255,255,.10);
+      border-bottom: 1px solid rgba(255,255,255,.15);
     }
     .portalTop::before{
       content:"";
       position:absolute; inset:0;
-      background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.62));
+      background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.4));
       z-index:1;
     }
-    .portal.world .portalTop{ background: url("assets/img/portal-world.jpg") center/cover; }
-    .portal.characters .portalTop{ background: url("assets/img/portal-characters.jpg") center/cover; }
-    .portal.other .portalTop{ background: url("assets/img/portal-other.jpg") center/cover; }
 
-    /* Halo: smaller and never exceed the top image area */
     .halo{
-  position:absolute;
-  width: 86px;
-  height: 86px;
-  border-radius:50%;
-  left:50%;
-  top:80px;
-  transform:translate(-50%, -50%);
-  background: rgba(15,18,25,.92);
-  border: 1px solid rgba(255,255,255,.35);
-  box-shadow:
-    0 12px 30px rgba(0,0,0,.45),
-    0 0 30px rgba(214,179,106,.08);
-}
-    .halo svg{ opacity:.92; }
+      position:absolute;
+      width: 86px; height: 86px;
+      border-radius:50%;
+      left:50%; top:80px;
+      transform:translate(-50%, -50%);
+      background: rgba(30,35,45,.95); /* 稍微调亮光圈底色 */
+      border: 1px solid rgba(255,255,255,.5);
+      box-shadow: 0 8px 25px rgba(0,0,0,.3);
+      z-index:2;
+      display:grid; place-items:center;
+    }
 
     .portalBody{
       padding: 52px 16px 16px;
@@ -276,6 +247,7 @@ Suggested (create these pages to avoid 404):
       font-size: 18px;
       letter-spacing:.22em;
       font-weight: 800;
+      color: #fff;
     }
     .portalBody p{
       margin: 10px auto 0;
@@ -291,78 +263,36 @@ Suggested (create these pages to avoid 404):
       gap:8px;
       padding: 9px 12px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.05);
-      color: rgba(255,255,255,.90);
+      border: 1px solid rgba(255,255,255,.3);
+      background: rgba(255,255,255,.1);
+      color: #fff;
       font-size: 12px;
-      letter-spacing:.10em;
-      transition: background .15s ease, border-color .15s ease, transform .15s ease;
-    }
-    .portal:hover .go{
-      background: rgba(255,255,255,.08);
-      border-color: rgba(255,255,255,.24);
-      transform: translateY(-1px);
-    }
-
-    /* ===== Guide line ===== */
-    .guide{
-      margin: 18px auto 0;
-      width: min(860px, 96%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap: 10px;
-      color: rgba(255,255,255,.70);
-      font-size: 12px;
-      letter-spacing:.16em;
-      opacity:.95;
-    }
-    .guide .dot{
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: rgba(214,179,106,.65);
-      box-shadow: 0 0 0 6px rgba(214,179,106,.14);
-    }
-    .guide .line{
-      height: 1px;
-      width: min(220px, 28vw);
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.30), transparent);
+      transition: all .2s ease;
     }
 
     /* ===== Updates ===== */
     .updates{
       margin-top: 18px;
-      border-top: 1px solid rgba(255,255,255,.10);
+      border-top: 1px solid rgba(255,255,255,.15);
       padding-top: 16px;
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap: 14px;
     }
     .panel{
-      border: 1px solid rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2);
       border-radius: var(--radius);
-      background: rgba(255,255,255,.04);
+      background: rgba(255,255,255,.08);
       padding: 14px 14px 12px;
     }
     .panel h4{
       margin: 0 0 8px;
       font-size: 13px;
       letter-spacing: .18em;
-      color: rgba(255,255,255,.92);
+      color: #fff;
       font-weight: 800;
     }
-    .panel p{
-      margin:0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.8;
-    }
-
-    .quickLinks{
-      display:grid;
-      gap:10px;
-      margin-top: 10px;
-    }
+    
     .linkRow{
       display:flex;
       align-items:center;
@@ -370,34 +300,17 @@ Suggested (create these pages to avoid 404):
       gap:10px;
       padding: 10px 12px;
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.03);
-      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.05);
+      transition: all .15s ease;
     }
     .linkRow:hover{
-      transform: translateY(-1px);
-      border-color: rgba(255,255,255,.22);
-      background: rgba(255,255,255,.06);
-    }
-    .linkRow span{
-      letter-spacing:.10em;
-      color: rgba(255,255,255,.90);
-      font-size: 13px;
-      font-weight: 800;
-    }
-    .linkRow em{
-      font-style:normal;
-      color: rgba(255,255,255,.55);
-      font-size: 12px;
-      letter-spacing:.08em;
+      border-color: rgba(255,255,255,.4);
+      background: rgba(255,255,255,.12);
     }
 
-    @media (max-width: 940px){
-      .updates{ grid-template-columns: 1fr; }
-    }
     @media (max-width: 760px){
       .portals{ grid-template-columns: 1fr; }
-      .topbar{ border-radius: 18px; }
       .nav{ display:none; }
     }
   </style>
@@ -406,56 +319,40 @@ Suggested (create these pages to avoid 404):
 <body>
   <main class="hero">
     <div class="frame">
-      <div class="corner tl"></div>
-      <div class="corner tr"></div>
-      <div class="corner bl"></div>
-      <div class="corner br"></div>
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
 
       <div class="inner">
-        <!-- Top bar -->
         <div class="topbar">
           <div class="mark">
-            <div class="seal" aria-hidden="true">
+            <div class="seal">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2l2.2 6.2L21 10l-5 3.7L17.8 20 12 16.7 6.2 20 8 13.7 3 10l6.8-1.8L12 2z"
-                      stroke="rgba(255,255,255,.85)" stroke-width="1.2" />
+                <path d="M12 2l2.2 6.2L21 10l-5 3.7L17.8 20 12 16.7 6.2 20 8 13.7 3 10l6.8-1.8L12 2z" stroke="#fff" stroke-width="1.5" />
               </svg>
             </div>
             <div class="markText">
               <b>踏莎行</b>
-              <small>仙侠世界观设定集合站（约稿 / 分享用）</small>
+              <small>仙侠世界观设定集合站</small>
             </div>
           </div>
-
-          <!-- Top nav -->
-          <nav class="nav" aria-label="top nav">
+          <nav class="nav">
             <a class="pill" href="log/index.html">日志</a>
             <a class="pill" href="nav/index.html">导航</a>
             <a class="pill" href="about/index.html">说明</a>
           </nav>
         </div>
 
-        <!-- Title -->
-        <section class="titleBlock" aria-label="title">
+        <section class="titleBlock">
           <h1 class="mainTitle">踏莎行</h1>
           <p class="subTitle">— 欢迎来到东方仙侠世界观设定集合站 —</p>
           <div class="divider"><span>流水落花春去也，天上人间</span></div>
         </section>
 
-        <!-- Portals -->
-        <section class="portals" aria-label="portals">
+        <section class="portals">
           <a class="portal world" href="world/index.html">
-            <div class="portalTop"></div>
-            <div class="halo" aria-hidden="true">
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12 6.5 2 12 2z"
-                      stroke="rgba(255,255,255,.88)" stroke-width="1.2"/>
-                <path d="M2.5 12h19" stroke="rgba(255,255,255,.65)" stroke-width="1.2"/>
-                <path d="M12 2.3c2.6 2.4 4.2 6 4.2 9.7S14.6 19.3 12 21.7"
-                      stroke="rgba(255,255,255,.65)" stroke-width="1.2"/>
-                <path d="M12 2.3C9.4 4.7 7.8 8.3 7.8 12s1.6 7.3 4.2 9.7"
-                      stroke="rgba(255,255,255,.65)" stroke-width="1.2"/>
-              </svg>
+            <div class="portalTop" style="background: url('assets/img/portal-world.jpg') center/cover;"></div>
+            <div class="halo">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff"><circle cx="12" cy="12" r="10" stroke-width="1.2"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20" stroke-width="1.2"/></svg>
             </div>
             <div class="portalBody">
               <h3>世界观</h3>
@@ -465,14 +362,9 @@ Suggested (create these pages to avoid 404):
           </a>
 
           <a class="portal characters" href="characters/index.html">
-            <div class="portalTop"></div>
-            <div class="halo" aria-hidden="true">
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                <path d="M12 12.4c2.6 0 4.6-2.1 4.6-4.6S14.6 3.2 12 3.2 7.4 5.3 7.4 7.8s2.1 4.6 4.6 4.6z"
-                      stroke="rgba(255,255,255,.88)" stroke-width="1.2"/>
-                <path d="M4 20.6c1.9-4 5-6 8-6s6.1 2 8 6"
-                      stroke="rgba(255,255,255,.65)" stroke-width="1.2" stroke-linecap="round"/>
-              </svg>
+            <div class="portalTop" style="background: url('assets/img/portal-characters.jpg') center/cover;"></div>
+            <div class="halo">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-width="1.2"/><circle cx="12" cy="7" r="4" stroke-width="1.2"/></svg>
             </div>
             <div class="portalBody">
               <h3>人物</h3>
@@ -482,12 +374,9 @@ Suggested (create these pages to avoid 404):
           </a>
 
           <a class="portal other" href="other/index.html">
-            <div class="portalTop"></div>
-            <div class="halo" aria-hidden="true">
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2.8l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.4l6.2-.9L12 2.8z"
-                      stroke="rgba(255,255,255,.88)" stroke-width="1.2"/>
-              </svg>
+            <div class="portalTop" style="background: url('assets/img/portal-other.jpg') center/cover;"></div>
+            <div class="halo">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke-width="1.2"/></svg>
             </div>
             <div class="portalBody">
               <h3>其他</h3>
@@ -497,32 +386,19 @@ Suggested (create these pages to avoid 404):
           </a>
         </section>
 
-        <div class="guide" aria-label="guide">
-          <span class="line"></span>
-          <span class="dot"></span>
-          <span>点击入口 · 跳转子页</span>
-          <span class="dot"></span>
-          <span class="line"></span>
-        </div>
-
-        <section class="updates" aria-label="updates">
+        <section class="updates">
           <div class="panel">
             <h4>最新更新</h4>
-            <p>【新增】：框架搭建更新</p>
+            <p>【新增】：框架亮度与字体优化</p>
           </div>
-
           <div class="panel">
             <h4>便捷入口</h4>
-            <div class="quickLinks">
+            <div style="display:grid; gap:8px; margin-top:8px;">
               <a class="linkRow" href="gallery/index.html"><span>画廊</span><em>Gallery</em></a>
               <a class="linkRow" href="characters/quick.html"><span>人物速查</span><em>Quick</em></a>
-              <a class="linkRow" href="contact/index.html"><span>联系我们</span><em>Contact</em></a>
             </div>
           </div>
         </section>
-
-        <!-- Mini-game: you said skip for now -->
-        <!-- <section id="minigame" class="panel">...</section> -->
       </div>
     </div>
   </main>
