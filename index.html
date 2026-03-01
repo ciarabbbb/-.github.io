@@ -225,18 +225,46 @@
       z-index:1;
     }
 
-    .halo{
-      position:absolute;
-      width: 86px; height: 86px;
-      border-radius:50%;
-      left:50%; top:80px;
-      transform:translate(-50%, -50%);
-      background: rgba(30,35,45,.95); /* 稍微调亮光圈底色 */
-      border: 1px solid rgba(255,255,255,.5);
-      box-shadow: 0 8px 25px rgba(0,0,0,.3);
-      z-index:2;
-      display:grid; place-items:center;
-    }
+   /* ===== 核心修改：调整图标容器 ===== */
+.halo {
+  position: absolute;
+  /* 将原本的 86px 放大到例如 100px */
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  left: 50%;
+  top: 80px; /* 保持原有的 top 位置，或者根据需要微调 */
+  transform: translate(-50%, -50%);
+  
+  /* 调整：使底色稍微亮一点点，提升对比度 */
+  background: rgba(25px, 30px, 40px, .95);
+  border: 1px solid rgba(255, 255, 255, .5); /* 调亮边框 */
+  
+  /* --- 关键：使用 Grid 将内部图标完美居中 --- */
+  display: grid;
+  place-items: center; /* 同时水平和垂直居中 */
+  
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, .3),
+    0 0 15px rgba(214, 179, 106, .05);
+  z-index: 2; /* 确保在最上层 */
+}
+
+/* ===== 核心修改：调整图标本身 (SVG) ===== */
+.halo svg {
+  /* 放大：将原本默认的 30px 放大到例如 48px，使其更占满空间 */
+  width: 48px;
+  height: 48px;
+  opacity: 1; /* 完全不透明，更清晰 */
+}
+
+/* ===== 核心修改：调整图标线条粗细，使其更“明显” ===== */
+.halo svg path,
+.halo svg circle {
+  /* 将原本的 1.2 增加到例如 1.5，线条更粗壮明显 */
+  stroke-width: 1.5;
+  stroke: #ffffff; /* 确保线条是纯白色 */
+}
 
     .portalBody{
       padding: 52px 16px 16px;
