@@ -1,25 +1,29 @@
-<!--
-Save as: index.html
-Suggested repo structure:
-  /index.html
-  /assets/img/hero.jpg            (your background image)
-  /assets/img/ink-texture.png     (optional, can omit)
-  /assets/img/emblem.png          (optional, can omit)
--->
 <!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>几度春秋</title>
-  <meta name="description" content="仙侠世界观设定集合站" />
+  <title>踏莎行</title>
+  <meta name="description" content="东方仙侠世界观设定集合站" />
 
   <style>
+    /* ===== Font: Huiwen Mincho (local) =====
+       Put files into:
+         /assets/fonts/HuiwenMincho.woff2
+         /assets/fonts/HuiwenMincho.woff
+    */
+    @font-face{
+      @font-face{
+  font-family: "HuiwenMincho";
+  src: url("assets/fonts/mingzhaohui.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
     :root{
       --bg0:#070a10;
       --ink:#0b0f18;
-      --paper:#f3efe6;
-      --mist:#d8e6ef;
       --gold:#d6b36a;
       --jade:#8fb8a8;
       --line:rgba(255,255,255,.16);
@@ -34,30 +38,16 @@ Suggested repo structure:
     body{
       margin:0;
       background:
-        radial-gradient(900px 600px at 15% 0%, rgba(143,184,168,.15), transparent 55%),
-        radial-gradient(900px 600px at 85% 10%, rgba(214,179,106,.16), transparent 58%),
+        radial-gradient(900px 600px at 15% 0%, rgba(143,184,168,.12), transparent 55%),
+        radial-gradient(900px 600px at 85% 10%, rgba(214,179,106,.12), transparent 58%),
         linear-gradient(180deg, var(--bg0), #06070b 60%, #06070b);
       color:var(--text);
-      font-family: ui-serif, "Songti SC","STSong","Noto Serif SC","Source Han Serif SC","PingFang SC",serif;
+      font-family: "HuiwenMincho", serif;
       overflow-x:hidden;
     }
     a{ color:inherit; text-decoration:none; }
 
-    /* Subtle film grain */
-    .grain{
-      pointer-events:none;
-      position:fixed; inset:0;
-      background-image: url("assets/img/ink-texture.png");
-      background-size: 900px auto;
-      mix-blend-mode: overlay;
-      opacity:.10;
-      filter: contrast(110%) brightness(90%);
-    }
-    @media (prefers-reduced-motion: reduce){
-      .grain{ display:none; }
-    }
-
-    /* Hero */
+    /* ===== Hero ===== */
     .hero{
       position:relative;
       min-height: 92vh;
@@ -66,27 +56,21 @@ Suggested repo structure:
       justify-content:center;
       padding: 28px 18px 42px;
     }
-   .hero::before{
-      content:"";
-      position:absolute;
-      inset:0;
 
-      background:
-        linear-gradient(180deg, rgba(6,8,12,.55), rgba(6,8,12,.75)),
-        url("assets/img/texture.jpg");
-
-      background-size: 800px; /* 控制纹理密度 */
-      background-repeat: repeat;
-      opacity: 0.85;
-    }
-    .hero::after{
+    /* Background texture (requested): assets/img/texture.jpg */
+    .hero::before{
       content:"";
       position:absolute; inset:0;
       background:
-        radial-gradient(1200px 520px at 50% 20%, rgba(255,255,255,.10), transparent 62%),
-        radial-gradient(900px 420px at 20% 70%, rgba(143,184,168,.10), transparent 60%),
-        radial-gradient(900px 420px at 85% 75%, rgba(214,179,106,.10), transparent 60%);
-      pointer-events:none;
+        radial-gradient(1200px 520px at 50% 20%, rgba(255,255,255,.08), transparent 62%),
+        radial-gradient(900px 420px at 20% 70%, rgba(143,184,168,.08), transparent 60%),
+        radial-gradient(900px 420px at 85% 75%, rgba(214,179,106,.08), transparent 60%),
+        linear-gradient(180deg, rgba(6,8,12,.62), rgba(6,8,12,.78)),
+        url("assets/img/texture.jpg");
+      background-size: auto, auto, auto, auto, 900px; /* texture density */
+      background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+      background-position: center, center, center, center, center;
+      filter: contrast(105%) saturate(92%);
     }
 
     .frame{
@@ -96,17 +80,16 @@ Suggested repo structure:
       border-radius: calc(var(--radius) + 10px);
       box-shadow: var(--shadow);
       backdrop-filter: blur(10px);
-      background: rgba(10,12,18,.36);
+      background: rgba(10,12,18,.40);
       overflow:hidden;
     }
 
-    /* Decorative corners */
     .corner{
       position:absolute;
       width: 90px; height: 90px;
       border: 1px solid rgba(255,255,255,.18);
       border-radius: 18px;
-      opacity:.55;
+      opacity:.45;
     }
     .corner.tl{ top:14px; left:14px; border-right:none; border-bottom:none; }
     .corner.tr{ top:14px; right:14px; border-left:none; border-bottom:none; }
@@ -119,7 +102,7 @@ Suggested repo structure:
       gap: 20px;
     }
 
-    /* Top mini bar */
+    /* ===== Top bar ===== */
     .topbar{
       display:flex;
       align-items:center;
@@ -132,21 +115,19 @@ Suggested repo structure:
     }
     .mark{
       display:flex; align-items:center; gap:10px;
-      padding-left:6px;
-      min-width:0;
+      padding-left:6px; min-width:0;
     }
     .seal{
       width: 28px; height: 28px;
       border-radius: 50%;
       border: 1px solid rgba(255,255,255,.18);
       background:
-        radial-gradient(circle at 30% 30%, rgba(214,179,106,.35), transparent 55%),
-        radial-gradient(circle at 70% 70%, rgba(143,184,168,.28), transparent 55%),
+        radial-gradient(circle at 30% 30%, rgba(214,179,106,.30), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(143,184,168,.24), transparent 55%),
         rgba(255,255,255,.05);
       box-shadow: 0 10px 20px rgba(0,0,0,.25);
       display:grid; place-items:center;
     }
-    .seal svg{ opacity:.85; }
     .markText{
       line-height:1.1;
       white-space:nowrap;
@@ -154,7 +135,7 @@ Suggested repo structure:
       text-overflow:ellipsis;
     }
     .markText b{
-      letter-spacing:.22em;
+      letter-spacing:.20em;
       font-size: 13px;
     }
     .markText small{
@@ -162,8 +143,9 @@ Suggested repo structure:
       margin-top:3px;
       color: var(--muted);
       font-size: 11px;
-      letter-spacing:.12em;
+      letter-spacing:.10em;
     }
+
     .nav{
       display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;
     }
@@ -184,7 +166,7 @@ Suggested repo structure:
       color: var(--text);
     }
 
-    /* Title block */
+    /* ===== Title block ===== */
     .titleBlock{
       text-align:center;
       padding: 10px 8px 0;
@@ -199,12 +181,12 @@ Suggested repo structure:
     .subTitle{
       margin:0;
       color: var(--muted);
-      letter-spacing: .25em;
+      letter-spacing: .22em;
       font-size: 13px;
     }
     .divider{
       margin: 18px auto 0;
-      width: min(520px, 92%);
+      width: min(560px, 92%);
       display:flex;
       align-items:center;
       gap:14px;
@@ -219,11 +201,11 @@ Suggested repo structure:
     }
     .divider span{
       font-size: 12px;
-      letter-spacing:.20em;
+      letter-spacing:.18em;
       opacity:.9;
     }
 
-    /* Quick entry: three portals */
+    /* ===== Portals ===== */
     .portals{
       margin-top: 18px;
       display:grid;
@@ -238,59 +220,53 @@ Suggested repo structure:
       overflow:hidden;
       position:relative;
       transition: transform .18s ease, border-color .18s ease, background .18s ease;
-      min-height: 250px;
+      min-height: 260px;
     }
     .portal:hover{
       transform: translateY(-2px);
       border-color: rgba(255,255,255,.24);
       background: rgba(10,12,18,.54);
     }
+
+    /* Top image area */
     .portalTop{
       position:relative;
-      height: 110px;
+      height: 118px;
       overflow:hidden;
       border-bottom: 1px solid rgba(255,255,255,.10);
     }
     .portalTop::before{
       content:"";
       position:absolute; inset:0;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.65));
+      background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.62));
       z-index:1;
-    }
-    .portalTop::after{
-      content:"";
-      position:absolute; inset:-20px;
-      background:
-        radial-gradient(200px 120px at 20% 30%, rgba(143,184,168,.22), transparent 60%),
-        radial-gradient(220px 120px at 80% 30%, rgba(214,179,106,.20), transparent 60%);
-      z-index:2;
-      opacity:.9;
     }
     .portal:nth-child(1) .portalTop{ background: url("assets/img/portal-world.jpg") center/cover; }
     .portal:nth-child(2) .portalTop{ background: url("assets/img/portal-characters.jpg") center/cover; }
     .portal:nth-child(3) .portalTop{ background: url("assets/img/portal-other.jpg") center/cover; }
 
+    /* Halo (smaller; won't exceed portalTop) */
     .halo{
       position:absolute;
-      width: 128px; height: 128px;
+      width: 86px; height: 86px;          /* smaller than before */
       border-radius: 50%;
       left: 50%;
-      top: 68px;
+      top: 98px;                           /* sits inside the top image area */
       transform: translate(-50%, -50%);
-      border: 1px solid rgba(255,255,255,.22);
+      border: 1px solid rgba(255,255,255,.20);
       background:
-        radial-gradient(circle at 35% 35%, rgba(255,255,255,.22), transparent 58%),
-        radial-gradient(circle at 70% 70%, rgba(214,179,106,.18), transparent 60%),
+        radial-gradient(circle at 35% 35%, rgba(255,255,255,.18), transparent 58%),
+        radial-gradient(circle at 70% 70%, rgba(214,179,106,.14), transparent 60%),
         rgba(255,255,255,.05);
-      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+      box-shadow: 0 18px 40px rgba(0,0,0,.32);
       z-index:3;
       display:grid;
       place-items:center;
     }
     .halo svg{ opacity:.92; }
+
     .portalBody{
-      padding: 70px 16px 16px;
+      padding: 52px 16px 16px; /* less padding because halo is smaller */
       text-align:center;
     }
     .portalBody h3{
@@ -300,7 +276,7 @@ Suggested repo structure:
     }
     .portalBody p{
       margin: 10px auto 0;
-      max-width: 26ch;
+      max-width: 30ch;
       color: var(--muted);
       font-size: 13px;
       line-height: 1.7;
@@ -325,7 +301,7 @@ Suggested repo structure:
       transform: translateY(-1px);
     }
 
-    /* Guide line */
+    /* ===== Guide line ===== */
     .guide{
       margin: 18px auto 0;
       width: min(860px, 96%);
@@ -335,7 +311,7 @@ Suggested repo structure:
       gap: 10px;
       color: rgba(255,255,255,.70);
       font-size: 12px;
-      letter-spacing:.18em;
+      letter-spacing:.16em;
       opacity:.95;
     }
     .guide .dot{
@@ -350,7 +326,7 @@ Suggested repo structure:
       background: linear-gradient(90deg, transparent, rgba(255,255,255,.30), transparent);
     }
 
-    /* Updates */
+    /* ===== Updates area ===== */
     .updates{
       margin-top: 18px;
       border-top: 1px solid rgba(255,255,255,.10);
@@ -368,7 +344,7 @@ Suggested repo structure:
     .panel h4{
       margin: 0 0 8px;
       font-size: 13px;
-      letter-spacing: .20em;
+      letter-spacing: .18em;
       color: rgba(255,255,255,.92);
     }
     .panel p, .panel li{
@@ -382,63 +358,51 @@ Suggested repo structure:
       padding-left: 18px;
     }
 
-    /* Scroll hint */
-    .scrollHint{
-      position:absolute;
-      left: 50%;
-      bottom: 16px;
-      transform: translateX(-50%);
-      color: rgba(255,255,255,.72);
-      font-size: 12px;
-      letter-spacing:.22em;
+    .quickLinks{
+      display:grid;
+      gap:10px;
+      margin-top: 10px;
+    }
+    .linkRow{
       display:flex;
       align-items:center;
+      justify-content:space-between;
       gap:10px;
-      opacity:.9;
-    }
-    .mouse{
-      width: 24px; height: 36px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.26);
-      position:relative;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.03);
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
     }
-    .mouse::after{
-      content:"";
-      position:absolute;
-      left: 50%; top: 7px;
-      width: 3px; height: 7px;
-      border-radius: 999px;
-      transform: translateX(-50%);
-      background: rgba(255,255,255,.65);
-      animation: wheel 1.2s infinite ease-in-out;
+    .linkRow:hover{
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.06);
     }
-    @keyframes wheel{
-      0%{ transform: translate(-50%, 0); opacity:.25; }
-      40%{ transform: translate(-50%, 6px); opacity:1; }
-      100%{ transform: translate(-50%, 10px); opacity:.0; }
+    .linkRow span{
+      letter-spacing:.10em;
+      color: rgba(255,255,255,.90);
+      font-size: 13px;
     }
-    @media (prefers-reduced-motion: reduce){
-      .mouse::after{ animation:none; }
-      .portal, .pill{ transition:none; }
+    .linkRow em{
+      font-style:normal;
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
     }
 
-    /* Responsive */
+    /* ===== Responsive ===== */
     @media (max-width: 940px){
       .updates{ grid-template-columns: 1fr; }
     }
     @media (max-width: 760px){
       .portals{ grid-template-columns: 1fr; }
-      .portal{ min-height: 240px; }
       .topbar{ border-radius: 18px; }
-      .nav{ display:none; } /* keep clean on small screens */
+      .nav{ display:none; }
     }
   </style>
 </head>
 
 <body>
-  <div class="grain" aria-hidden="true"></div>
-
   <main class="hero">
     <div class="frame">
       <div class="corner tl" aria-hidden="true"></div>
@@ -451,7 +415,6 @@ Suggested repo structure:
         <div class="topbar">
           <div class="mark">
             <div class="seal" aria-hidden="true">
-              <!-- small emblem -->
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M12 2l2.2 6.2L21 10l-5 3.7L17.8 20 12 16.7 6.2 20 8 13.7 3 10l6.8-1.8L12 2z"
                       stroke="rgba(255,255,255,.85)" stroke-width="1.2" />
@@ -463,10 +426,11 @@ Suggested repo structure:
             </div>
           </div>
 
-          <nav class="nav" aria-label="quick nav">
-            <a class="pill" href="#portals">快速入口</a>
-            <a class="pill" href="#updates">最近更新</a>
-            <a class="pill" href="pages/commission.html">约稿说明</a>
+          <!-- Top nav: 日志 / 导航 / 说明 -->
+          <nav class="nav" aria-label="top nav">
+            <a class="pill" href="log/index.html">日志</a>
+            <a class="pill" href="nav/index.html">导航</a>
+            <a class="pill" href="about/index.html">说明</a>
           </nav>
         </div>
 
@@ -474,7 +438,7 @@ Suggested repo structure:
         <section class="titleBlock" aria-label="title">
           <h1 class="mainTitle">几度春秋</h1>
           <p class="subTitle">— 欢迎来到仙侠世界观设定集合站 —</p>
-          <div class="divider"><span>入　门</span></div>
+          <div class="divider"><span>流水落花春去也，天上人间</span></div>
         </section>
 
         <!-- Portals -->
@@ -483,8 +447,7 @@ Suggested repo structure:
           <a class="portal" href="world/index.html">
             <div class="portalTop"></div>
             <div class="halo" aria-hidden="true">
-              <!-- world icon -->
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
                 <path d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12 6.5 2 12 2z"
                       stroke="rgba(255,255,255,.88)" stroke-width="1.2"/>
                 <path d="M2.5 12h19" stroke="rgba(255,255,255,.65)" stroke-width="1.2"/>
@@ -496,7 +459,7 @@ Suggested repo structure:
             </div>
             <div class="portalBody">
               <h3>世界观</h3>
-              <p>三界结构、规则与名词解释；适合快速补背景与统一口径。</p>
+              <p>包含世界观下的基本设定信息、势力介绍、名词解释等。</p>
               <span class="go">进入 · World</span>
             </div>
           </a>
@@ -505,8 +468,7 @@ Suggested repo structure:
           <a class="portal" href="characters/index.html">
             <div class="portalTop"></div>
             <div class="halo" aria-hidden="true">
-              <!-- character icon -->
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
                 <path d="M12 12.4c2.6 0 4.6-2.1 4.6-4.6S14.6 3.2 12 3.2 7.4 5.3 7.4 7.8s2.1 4.6 4.6 4.6z"
                       stroke="rgba(255,255,255,.88)" stroke-width="1.2"/>
                 <path d="M4 20.6c1.9-4 5-6 8-6s6.1 2 8 6"
@@ -515,7 +477,7 @@ Suggested repo structure:
             </div>
             <div class="portalBody">
               <h3>人物</h3>
-              <p>人物小传、性格关键词、关系网、视觉要点与约稿拆分。</p>
+              <p>包含人物设定、关系网等。</p>
               <span class="go">进入 · Characters</span>
             </div>
           </a>
@@ -524,15 +486,14 @@ Suggested repo structure:
           <a class="portal" href="other/index.html">
             <div class="portalTop"></div>
             <div class="halo" aria-hidden="true">
-              <!-- other icon -->
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
                 <path d="M12 2.8l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.4l6.2-.9L12 2.8z"
                       stroke="rgba(255,255,255,.88)" stroke-width="1.2"/>
               </svg>
             </div>
             <div class="portalBody">
               <h3>其他</h3>
-              <p>器物法术、时间线、约稿资料包、灵感碎片与参考图集。</p>
+              <p>小故事、碎碎念和堆一些稿件。</p>
               <span class="go">进入 · Other</span>
             </div>
           </a>
@@ -542,52 +503,34 @@ Suggested repo structure:
         <div class="guide" aria-label="guide">
           <span class="line"></span>
           <span class="dot" aria-hidden="true"></span>
-          <span>点击入口 · 跳转子页 · 继续扩展</span>
+          <span>点击入口 · 跳转子页</span>
           <span class="dot" aria-hidden="true"></span>
           <span class="line"></span>
         </div>
 
         <!-- Updates -->
         <section id="updates" class="updates" aria-label="updates">
+          <!-- Left: latest updates -->
           <div class="panel">
-            <h4>最近更新</h4>
-            <ul>
-              <li>（示例）主页框架上线：三大入口完成</li>
-              <li>（示例）新增：人物页模板与约稿要点</li>
-              <li>（示例）新增：世界观概述（占位）</li>
-            </ul>
+            <h4>最新更新</h4>
+            <p>【新增】：框架搭建更新</p>
           </div>
 
+          <!-- Right: quick links -->
           <div class="panel">
-            <h4>使用小抄</h4>
-            <p>
-              1）把背景图放到 <b>assets/img/hero.jpg</b><br/>
-              2）三张入口插图分别放到：<br/>
-              <b>assets/img/portal-world.jpg</b> / <b>portal-characters.jpg</b> / <b>portal-other.jpg</b><br/>
-              3）子页文件：<b>world/index.html</b>、<b>characters/index.html</b>、<b>other/index.html</b>
-            </p>
+            <h4>便捷入口</h4>
+            <div class="quickLinks">
+              <a class="linkRow" href="gallery/index.html"><span>画廊</span><em>Gallery</em></a>
+              <a class="linkRow" href="characters/quick.html"><span>人物速查</span><em>Quick</em></a>
+              <a class="linkRow" href="contact/index.html"><span>联系我们</span><em>Contact</em></a>
+            </div>
           </div>
         </section>
-      </div>
 
-      <div class="scrollHint" aria-hidden="true">
-        <div class="mouse"></div>
-        <div>向下 · 继续</div>
+        <!-- (小游戏区域：你说先不写，这里先留空占位，后面再补) -->
+        <!-- <section id="minigame" class="panel">...</section> -->
       </div>
     </div>
   </main>
-
-  <script>
-    // Smooth scroll for in-page anchors
-    document.addEventListener("click", (e) => {
-      const a = e.target.closest('a[href^="#"]');
-      if(!a) return;
-      const id = a.getAttribute("href");
-      const el = document.querySelector(id);
-      if(!el) return;
-      e.preventDefault();
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  </script>
 </body>
 </html>
