@@ -1,182 +1,862 @@
+<!--
+Save as: index.html
+
+Required images:
+  /assets/img/texture.jpg
+  /assets/img/portal-world.jpg
+  /assets/img/portal-characters.jpg
+  /assets/img/portal-other.jpg
+
+Suggested (create these pages to avoid 404):
+  /log/index.html
+  /nav/index.html
+  /about/index.html
+  /world/index.html
+  /characters/index.html
+  /other/index.html
+  /gallery/index.html
+  /characters/quick.html
+  /contact/index.html
+-->
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>几度春秋</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>几度春秋</title>
+  <meta name="description" content="仙侠世界观设定集合站（约稿/分享用）" />
 
-<style>
+  <style>
+    :root{
+      --bg0:#070a10;
+      --gold:#d6b36a;
+      --jade:#8fb8a8;
+      --line2:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.74);
+      --shadow: 0 20px 60px rgba(0,0,0,.45);
+      --radius: 22px;
+    }
 
-/* =====================
-   全站统一宋体
-===================== */
+    *{ box-sizing:border-box; }
 
-*{
-  font-family: "Songti SC","STSong","SimSun","NSimSun",serif !important;
-}
+    /* === 1) 统一宋体（强制） === */
+    html, body{
+      height:100%;
+      font-family: "Songti SC","STSong","SimSun","NSimSun",serif !important;
+    }
 
-body{
-  margin:0;
-  background:#0b0f16;
-  color:#f2f2f2;
-}
+    body{
+      margin:0;
+      color:var(--text);
+      background:
+        radial-gradient(900px 600px at 15% 0%, rgba(143,184,168,.12), transparent 55%),
+        radial-gradient(900px 600px at 85% 10%, rgba(214,179,106,.12), transparent 58%),
+        linear-gradient(180deg, var(--bg0), #06070b 60%, #06070b);
+      overflow-x:hidden;
+    }
+    a{ color:inherit; text-decoration:none; }
 
-/* =====================
-   你原本页面样式（简化）
-===================== */
+    /* ===== Hero background texture ===== */
+    .hero{
+      position:relative;
+      min-height: 92vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 28px 18px 42px;
+    }
+    .hero::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(1200px 520px at 50% 20%, rgba(255,255,255,.08), transparent 62%),
+        radial-gradient(900px 420px at 20% 70%, rgba(143,184,168,.08), transparent 60%),
+        radial-gradient(900px 420px at 85% 75%, rgba(214,179,106,.08), transparent 60%),
+        linear-gradient(180deg, rgba(6,8,12,.62), rgba(6,8,12,.78)),
+        url("assets/img/texture.jpg");
+      background-size: auto, auto, auto, auto, 900px;  /* texture density */
+      background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+      background-position: center, center, center, center, center;
+      filter: contrast(105%) saturate(92%);
+    }
 
-.hero{
-  padding:60px 20px;
-  text-align:center;
-}
+    /* ===== Glass frame ===== */
+    .frame{
+      position:relative;
+      width:min(1080px, 100%);
+      border: 1px solid var(--line2);
+      border-radius: calc(var(--radius) + 10px);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      background: rgba(10,12,18,.40);
+      overflow:hidden;
+    }
 
-.mainTitle{
-  font-size:56px;
-  letter-spacing:.25em;
-  margin-bottom:10px;
-}
+    .corner{
+      position:absolute;
+      width: 90px; height: 90px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 18px;
+      opacity:.45;
+      pointer-events:none;
+    }
+    .corner.tl{ top:14px; left:14px; border-right:none; border-bottom:none; }
+    .corner.tr{ top:14px; right:14px; border-left:none; border-bottom:none; }
+    .corner.bl{ bottom:14px; left:14px; border-right:none; border-top:none; }
+    .corner.br{ bottom:14px; right:14px; border-left:none; border-top:none; }
 
-.subTitle{
-  opacity:.7;
-  letter-spacing:.2em;
-}
+    .inner{
+      position:relative;
+      padding: 46px 26px 34px;
+      display:grid;
+      gap: 20px;
+    }
 
-.section{
-  margin-top:60px;
-}
+    /* ===== Top bar ===== */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+    }
+    .mark{
+      display:flex; align-items:center; gap:10px;
+      padding-left:6px; min-width:0;
+    }
+    .seal{
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.18);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(214,179,106,.30), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(143,184,168,.24), transparent 55%),
+        rgba(255,255,255,.05);
+      box-shadow: 0 10px 20px rgba(0,0,0,.25);
+      display:grid; place-items:center;
+    }
+    .markText{
+      line-height:1.1;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .markText b{
+      letter-spacing:.20em;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .markText small{
+      display:block;
+      margin-top:3px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing:.10em;
+    }
 
-/* =====================
-   小游戏样式
-===================== */
+    .nav{
+      display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .pill{
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing:.08em;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease, color .15s ease;
+    }
+    .pill:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.07);
+      border-color: rgba(255,255,255,.22);
+      color: var(--text);
+    }
 
-#gameWrapper{
-  margin-top:80px;
-  padding:40px 0 80px;
-  text-align:center;
-  border-top:1px solid rgba(255,255,255,.15);
-}
+    /* ===== Title block ===== */
+    .titleBlock{ text-align:center; padding: 10px 8px 0; }
+    .mainTitle{
+      margin: 10px 0 8px;
+      font-size: clamp(44px, 6vw, 72px);
+      letter-spacing: .22em;
+      font-weight: 800;
+      text-shadow:
+        0 0 18px rgba(214,179,106,.14),
+        0 20px 60px rgba(0,0,0,.55);
+    }
+    .subTitle{
+      margin:0;
+      color: var(--muted);
+      letter-spacing: .22em;
+      font-size: 13px;
+    }
+    .divider{
+      margin: 18px auto 0;
+      width: min(620px, 92%);
+      display:flex;
+      align-items:center;
+      gap:14px;
+      color: rgba(255,255,255,.55);
+    }
+    .divider::before,
+    .divider::after{
+      content:"";
+      height:1px;
+      flex:1;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.26), transparent);
+    }
+    .divider span{
+      font-size: 12px;
+      letter-spacing:.18em;
+      opacity:.92;
+    }
 
-#gameCanvas{
-  background:#111;
-  border:1px solid rgba(255,255,255,.2);
-  display:block;
-  margin:20px auto;
-}
+    /* ===== Portals ===== */
+    .portals{
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      padding: 6px 6px 0;
+    }
+    .portal{
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: var(--radius);
+      background: rgba(10,12,18,.40);
+      overflow:hidden;
+      position:relative;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      min-height: 260px;
+    }
+    .portal:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,.24);
+      background: rgba(10,12,18,.54);
+    }
 
-#score{
-  margin-top:10px;
-  opacity:.8;
-}
+    .portalTop{
+      position:relative;
+      height: 118px;
+      overflow:hidden;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+    .portalTop::before{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.62));
+      z-index:1;
+    }
+    .portal.world .portalTop{ background: url("assets/img/portal-world.jpg") center/cover; }
+    .portal.characters .portalTop{ background: url("assets/img/portal-characters.jpg") center/cover; }
+    .portal.other .portalTop{ background: url("assets/img/portal-other.jpg") center/cover; }
 
-</style>
+    /* Halo: slightly higher + less transparent (nice on dark bg) */
+    .halo{
+      position:absolute;
+      width: 84px; height: 84px;
+      border-radius: 50%;
+      left: 50%;
+      top: 82px; /* moved up */
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(255,255,255,.28);
+      background: rgba(15,18,25,.92);
+      box-shadow:
+        0 18px 40px rgba(0,0,0,.40),
+        0 0 26px rgba(214,179,106,.10);
+      z-index:3;
+      display:grid;
+      place-items:center;
+    }
+    .halo svg{ opacity:.92; }
+
+    .portalBody{
+      padding: 52px 16px 16px;
+      text-align:center;
+    }
+    .portalBody h3{
+      margin:0;
+      font-size: 18px;
+      letter-spacing:.22em;
+      font-weight: 800;
+    }
+    .portalBody p{
+      margin: 10px auto 0;
+      max-width: 32ch;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .go{
+      margin-top: 14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.90);
+      font-size: 12px;
+      letter-spacing:.10em;
+      transition: background .15s ease, border-color .15s ease, transform .15s ease;
+    }
+    .portal:hover .go{
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.24);
+      transform: translateY(-1px);
+    }
+
+    /* ===== Guide line ===== */
+    .guide{
+      margin: 18px auto 0;
+      width: min(860px, 96%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      color: rgba(255,255,255,.70);
+      font-size: 12px;
+      letter-spacing:.16em;
+      opacity:.95;
+    }
+    .guide .dot{
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(214,179,106,.65);
+      box-shadow: 0 0 0 6px rgba(214,179,106,.14);
+    }
+    .guide .line{
+      height: 1px;
+      width: min(220px, 28vw);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.30), transparent);
+    }
+
+    /* ===== Updates ===== */
+    .updates{
+      margin-top: 18px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      padding-top: 16px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .panel{
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.04);
+      padding: 14px 14px 12px;
+    }
+    .panel h4{
+      margin: 0 0 8px;
+      font-size: 13px;
+      letter-spacing: .18em;
+      color: rgba(255,255,255,.92);
+      font-weight: 800;
+    }
+    .panel p{
+      margin:0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .quickLinks{
+      display:grid;
+      gap:10px;
+      margin-top: 10px;
+    }
+    .linkRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+    }
+    .linkRow:hover{
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.06);
+    }
+    .linkRow span{
+      letter-spacing:.10em;
+      color: rgba(255,255,255,.90);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .linkRow em{
+      font-style:normal;
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
+      letter-spacing:.08em;
+    }
+
+    /* ===== Mini Game ===== */
+    .gameWrap{
+      margin-top: 18px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      padding-top: 16px;
+      display:grid;
+      gap: 12px;
+    }
+    .gameHeader{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .gameHeader h4{
+      margin:0;
+      font-size: 13px;
+      letter-spacing: .18em;
+      font-weight: 800;
+      color: rgba(255,255,255,.92);
+    }
+    .gameHeader .hint{
+      margin:0;
+      color: rgba(255,255,255,.60);
+      font-size: 12px;
+      letter-spacing: .10em;
+    }
+    .gameBox{
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.03);
+      padding: 12px;
+      overflow:hidden;
+    }
+    .gameTopRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .score{
+      color: rgba(255,255,255,.86);
+      letter-spacing:.10em;
+      font-size: 12px;
+    }
+    .btns{
+      display:flex;
+      gap:8px;
+      flex-wrap: wrap;
+    }
+    .btn{
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.90);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      letter-spacing:.10em;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:hover{
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.24);
+    }
+    canvas{
+      width: 100%;
+      height: 200px;
+      display:block;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(8,10,14,.70);
+      touch-action: manipulation; /* allow tap without zoom/scroll conflicts */
+    }
+    .gameNote{
+      margin: 8px 2px 0;
+      color: rgba(255,255,255,.60);
+      font-size: 12px;
+      letter-spacing:.08em;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 940px){
+      .updates{ grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px){
+      .portals{ grid-template-columns: 1fr; }
+      .topbar{ border-radius: 18px; }
+      .nav{ display:none; }
+      .inner{ padding: 38px 16px 28px; }
+    }
+  </style>
 </head>
 
 <body>
+  <main class="hero">
+    <div class="frame">
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
 
-<div class="hero">
-  <div class="mainTitle">几度春秋</div>
-  <div class="subTitle">— 流水落花春去也，天上人间 —</div>
-</div>
+      <div class="inner">
+        <!-- Top bar -->
+        <div class="topbar">
+          <div class="mark">
+            <div class="seal" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2l2.2 6.2L21 10l-5 3.7L17.8 20 12 16.7 6.2 20 8 13.7 3 10l6.8-1.8L12 2z"
+                      stroke="rgba(255,255,255,.85)" stroke-width="1.2" />
+              </svg>
+            </div>
+            <div class="markText">
+              <b>几度春秋</b>
+              <small>仙侠世界观设定集合站（约稿 / 分享用）</small>
+            </div>
+          </div>
 
-<!-- =====================
-     小游戏区域
-===================== -->
+          <!-- Top nav -->
+          <nav class="nav" aria-label="top nav">
+            <a class="pill" href="log/index.html">日志</a>
+            <a class="pill" href="nav/index.html">导航</a>
+            <a class="pill" href="about/index.html">说明</a>
+          </nav>
+        </div>
 
-<div id="gameWrapper">
-  <h2>人间小试</h2>
-  <p>按 空格键 跳跃 · 躲避劫难</p>
-  <canvas id="gameCanvas" width="600" height="200"></canvas>
-  <div id="score">得分：0</div>
-</div>
+        <!-- Title -->
+        <section class="titleBlock" aria-label="title">
+          <h1 class="mainTitle">几度春秋</h1>
+          <p class="subTitle">— 欢迎来到仙侠世界观设定集合站 —</p>
+          <div class="divider"><span>流水落花春去也，天上人间</span></div>
+        </section>
 
-<script>
+        <!-- Portals -->
+        <section class="portals" aria-label="portals">
+          <a class="portal world" href="world/index.html">
+            <div class="portalTop"></div>
+            <div class="halo" aria-hidden="true">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12 6.5 2 12 2z"
+                      stroke="rgba(255,255,255,.88)" stroke-width="1.2"/>
+                <path d="M2.5 12h19" stroke="rgba(255,255,255,.65)" stroke-width="1.2"/>
+                <path d="M12 2.3c2.6 2.4 4.2 6 4.2 9.7S14.6 19.3 12 21.7"
+                      stroke="rgba(255,255,255,.65)" stroke-width="1.2"/>
+                <path d="M12 2.3C9.4 4.7 7.8 8.3 7.8 12s1.6 7.3 4.2 9.7"
+                      stroke="rgba(255,255,255,.65)" stroke-width="1.2"/>
+              </svg>
+            </div>
+            <div class="portalBody">
+              <h3>世界观</h3>
+              <p>包含世界观下的基本设定信息、势力介绍、名词解释等。</p>
+              <span class="go">进入 · World</span>
+            </div>
+          </a>
 
-/* =====================
-   极简恐龙式小游戏
-===================== */
+          <a class="portal characters" href="characters/index.html">
+            <div class="portalTop"></div>
+            <div class="halo" aria-hidden="true">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                <path d="M12 12.4c2.6 0 4.6-2.1 4.6-4.6S14.6 3.2 12 3.2 7.4 5.3 7.4 7.8s2.1 4.6 4.6 4.6z"
+                      stroke="rgba(255,255,255,.88)" stroke-width="1.2"/>
+                <path d="M4 20.6c1.9-4 5-6 8-6s6.1 2 8 6"
+                      stroke="rgba(255,255,255,.65)" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="portalBody">
+              <h3>人物</h3>
+              <p>包含人物设定、关系网等。</p>
+              <span class="go">进入 · Characters</span>
+            </div>
+          </a>
 
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+          <a class="portal other" href="other/index.html">
+            <div class="portalTop"></div>
+            <div class="halo" aria-hidden="true">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2.8l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.4l6.2-.9L12 2.8z"
+                      stroke="rgba(255,255,255,.88)" stroke-width="1.2"/>
+              </svg>
+            </div>
+            <div class="portalBody">
+              <h3>其他</h3>
+              <p>小故事、碎碎念和堆一些稿件。</p>
+              <span class="go">进入 · Other</span>
+            </div>
+          </a>
+        </section>
 
-let player = {
-  x:50,
-  y:150,
-  width:20,
-  height:20,
-  velocityY:0,
-  jumping:false
-};
+        <div class="guide" aria-label="guide">
+          <span class="line"></span>
+          <span class="dot"></span>
+          <span>点击入口 · 跳转子页</span>
+          <span class="dot"></span>
+          <span class="line"></span>
+        </div>
 
-let gravity = 0.6;
-let obstacle = {
-  x:600,
-  y:160,
-  width:20,
-  height:40
-};
+        <section class="updates" aria-label="updates">
+          <div class="panel">
+            <h4>最新更新</h4>
+            <p>【新增】：框架搭建更新</p>
+          </div>
 
-let score = 0;
-let gameOver = false;
+          <div class="panel">
+            <h4>便捷入口</h4>
+            <div class="quickLinks">
+              <a class="linkRow" href="gallery/index.html"><span>画廊</span><em>Gallery</em></a>
+              <a class="linkRow" href="characters/quick.html"><span>人物速查</span><em>Quick</em></a>
+              <a class="linkRow" href="contact/index.html"><span>联系我们</span><em>Contact</em></a>
+            </div>
+          </div>
+        </section>
 
-function drawPlayer(){
-  ctx.fillStyle = "white";
-  ctx.fillRect(player.x, player.y, player.width, player.height);
-}
+        <!-- ===== Mini Game ===== -->
+        <section class="gameWrap" aria-label="mini game">
+          <div class="gameHeader">
+            <h4>人间小试</h4>
+            <p class="hint">点画布 / 点“跳跃” / 键盘空格：跳 · 撞到劫障就结束</p>
+          </div>
 
-function drawObstacle(){
-  ctx.fillStyle = "#d6b36a";
-  ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-}
+          <div class="gameBox">
+            <div class="gameTopRow">
+              <div class="score" id="mzScore">得分：0</div>
+              <div class="btns">
+                <button class="btn" id="mzStart">开始</button>
+                <button class="btn" id="mzJump">跳跃</button>
+                <button class="btn" id="mzRestart">重开</button>
+              </div>
+            </div>
 
-function update(){
-  if(gameOver) return;
+            <canvas id="mzCanvas" width="1000" height="200" aria-label="mini game canvas"></canvas>
+            <div class="gameNote">
+              小贴士：iPad 没空格键也能玩——直接点画布即可跳；若页面滚动影响操作，优先点“开始”再点画布。
+            </div>
+          </div>
+        </section>
 
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+      </div>
+    </div>
+  </main>
 
-  // 重力
-  player.velocityY += gravity;
-  player.y += player.velocityY;
+  <script>
+    // ===== Mini game: simple runner (mobile-friendly) =====
+    (function(){
+      const canvas = document.getElementById('mzCanvas');
+      const ctx = canvas.getContext('2d');
 
-  if(player.y >= 150){
-    player.y = 150;
-    player.jumping = false;
-  }
+      const elScore = document.getElementById('mzScore');
+      const btnStart = document.getElementById('mzStart');
+      const btnJump = document.getElementById('mzJump');
+      const btnRestart = document.getElementById('mzRestart');
 
-  // 障碍移动
-  obstacle.x -= 5;
-  if(obstacle.x < -20){
-    obstacle.x = 600;
-    score++;
-    document.getElementById("score").innerText = "得分：" + score;
-  }
+      // High-DPI crispness
+      function resizeCanvasForDPR(){
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        const cssW = canvas.clientWidth;
+        const cssH = canvas.clientHeight;
+        canvas.width = Math.floor(cssW * dpr);
+        canvas.height = Math.floor(cssH * dpr);
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+      }
 
-  // 碰撞检测
-  if(
-    player.x < obstacle.x + obstacle.width &&
-    player.x + player.width > obstacle.x &&
-    player.y < obstacle.y + obstacle.height &&
-    player.y + player.height > obstacle.y
-  ){
-    gameOver = true;
-    document.getElementById("score").innerText += " · 劫难已至";
-  }
+      // State
+      let running = false;
+      let gameOver = false;
+      let score = 0;
 
-  drawPlayer();
-  drawObstacle();
+      const groundY = 160;
+      const player = {
+        x: 60,
+        y: groundY,
+        r: 12,
+        vy: 0,
+        jumping: false,
+      };
 
-  requestAnimationFrame(update);
-}
+      let speed = 260; // px/s
+      let obstacle = null;
 
-document.addEventListener("keydown",function(e){
-  if(e.code === "Space" && !player.jumping){
-    player.velocityY = -10;
-    player.jumping = true;
-  }
-});
+      function reset(){
+        running = false;
+        gameOver = false;
+        score = 0;
+        speed = 260;
+        player.y = groundY;
+        player.vy = 0;
+        player.jumping = false;
+        obstacle = spawnObstacle();
+        elScore.textContent = '得分：0';
+        draw(0);
+      }
 
-update();
+      function spawnObstacle(){
+        // simple pillar
+        const w = 18 + Math.random() * 18;
+        const h = 34 + Math.random() * 26;
+        return {
+          x: canvas.clientWidth + 40,
+          y: groundY + player.r - h,
+          w,
+          h
+        };
+      }
 
-</script>
+      function jump(){
+        if(!running || gameOver) return;
+        if(!player.jumping){
+          player.vy = -520;
+          player.jumping = true;
+        }
+      }
 
+      // Input (iPad friendly)
+      btnStart.addEventListener('click', () => {
+        if(!running && !gameOver){
+          running = true;
+          lastT = performance.now();
+          requestAnimationFrame(loop);
+        }
+      });
+
+      btnRestart.addEventListener('click', () => {
+        reset();
+      });
+
+      btnJump.addEventListener('click', () => {
+        jump();
+      });
+
+      // Tap/click canvas to jump
+      canvas.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        // if not running, start + jump
+        if(!running && !gameOver){
+          running = true;
+          lastT = performance.now();
+          requestAnimationFrame(loop);
+        }
+        jump();
+      }, {passive:false});
+
+      // Keyboard (desktop)
+      window.addEventListener('keydown', (e) => {
+        if(e.code === 'Space'){
+          e.preventDefault();
+          if(!running && !gameOver){
+            running = true;
+            lastT = performance.now();
+            requestAnimationFrame(loop);
+          }
+          jump();
+        }
+      }, {passive:false});
+
+      function rectHitCircle(rx, ry, rw, rh, cx, cy, cr){
+        // clamp
+        const x = Math.max(rx, Math.min(cx, rx + rw));
+        const y = Math.max(ry, Math.min(cy, ry + rh));
+        const dx = cx - x;
+        const dy = cy - y;
+        return (dx*dx + dy*dy) <= cr*cr;
+      }
+
+      function draw(dt){
+        // background
+        ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight);
+
+        // soft ground line
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, groundY + player.r + 6);
+        ctx.lineTo(canvas.clientWidth, groundY + player.r + 6);
+        ctx.strokeStyle = 'rgba(255,255,255,.18)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // player
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, player.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,.92)';
+        ctx.fill();
+
+        // obstacle
+        ctx.fillStyle = 'rgba(214,179,106,.92)';
+        ctx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+
+        // status text
+        if(!running && !gameOver){
+          ctx.fillStyle = 'rgba(255,255,255,.70)';
+          ctx.font = '14px "Songti SC","STSong","SimSun",serif';
+          ctx.fillText('点击“开始”或直接点画布开始', 18, 26);
+        }
+        if(gameOver){
+          ctx.fillStyle = 'rgba(255,255,255,.90)';
+          ctx.font = '16px "Songti SC","STSong","SimSun",serif';
+          ctx.fillText('劫障已至 · 点“重开”再来', 18, 26);
+        }
+      }
+
+      let lastT = 0;
+      function loop(t){
+        if(!running) return;
+        const dt = Math.min(0.035, (t - lastT) / 1000);
+        lastT = t;
+
+        // physics
+        const g = 1400; // px/s^2
+        player.vy += g * dt;
+        player.y += player.vy * dt;
+
+        if(player.y >= groundY){
+          player.y = groundY;
+          player.vy = 0;
+          player.jumping = false;
+        }
+
+        // move obstacle
+        obstacle.x -= speed * dt;
+
+        // pass obstacle
+        if(obstacle.x + obstacle.w < 0){
+          obstacle = spawnObstacle();
+          score += 1;
+          speed = Math.min(520, speed + 10);
+          elScore.textContent = '得分：' + score;
+        }
+
+        // collision
+        if(rectHitCircle(obstacle.x, obstacle.y, obstacle.w, obstacle.h, player.x, player.y, player.r)){
+          gameOver = true;
+          running = false;
+          elScore.textContent = '得分：' + score + ' · 败于劫障';
+          draw(dt);
+          return;
+        }
+
+        draw(dt);
+        requestAnimationFrame(loop);
+      }
+
+      // init
+      function onResize(){
+        resizeCanvasForDPR();
+        // re-place obstacle relative to new width
+        if(!obstacle) obstacle = spawnObstacle();
+        else obstacle.x = Math.min(obstacle.x, canvas.clientWidth + 40);
+        draw(0);
+      }
+
+      reset();
+      // Canvas uses CSS height 200px; set it explicitly so DPR resize has correct client size
+      canvas.style.height = '200px';
+      onResize();
+      window.addEventListener('resize', onResize);
+    })();
+  </script>
 </body>
 </html>
