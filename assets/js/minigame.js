@@ -1,4 +1,10 @@
-// ===== Mini Game: Person + Flower/Rock Runner (uneven obstacles + moon/clouds) =====
+// ===== Mini Game: Person + Flower/Rock Runner
+// Features:
+// 1) Uneven obstacles (not too uniform)
+// 2) Difficulty curve: early loose -> later dense
+// 3) No long empty gap bug (always spawn to the right)
+// 4) Moon + drifting clouds
+// 5) Person player + flower/rock obstacles
 (function(){
   const canvas = document.getElementById('mzCanvas');
   const ctx = canvas.getContext('2d');
@@ -33,81 +39,60 @@
     jumping: false,
   };
 
-  let speed = 260;           // px/s
-  let obstacles = [];        // 多障碍
-  let burstChance = 0.12
-  let nextSpawnX = 0;        // 下次生成位置（像“路程”一样推进）
-  let cloudOffset = 0;       // 云的时间偏移
+  let speed = 260;        // px/s (will be updated by difficulty)
+  let burstChance = 0.12; // 连发概率：会随分数上升
+  let obstacles = [];
 
+  // Sky
+  let cloudOffset = 0;
   const clouds = [
     { x: 120, y: 42, s: 1.0, k: 0.35 },
     { x: 420, y: 58, s: 1.3, k: 0.25 },
     { x: 760, y: 36, s: 0.9, k: 0.18 },
   ];
 
-  // ===== Reset =====
-  function reset(){
-    running = false;
-    gameOver = false;
-    score = 0;
-    speed = 260;
-
-    player.y = groundY;
-    player.vy = 0;
-    player.jumping = false;
-
-    obstacles = [];
-    nextSpawnX = canvas.clientWidth + 80;
-    spawnObstacleAt(nextSpawnX); // 初始放一个
-    elScore.textContent = '得分：0';
-
-    draw();
-  }
-
-  // ===== Uneven obstacle spacing =====
+  // ===== Difficulty curve (early loose -> later dense) =====
   function updateDifficulty(){
-  // d: 0~1，0=最松，1=最密
-  // 你可以把 40 改成 50：会更“慢热”
-  const d = Math.max(0, Math.min(1, score / 40));
+    // d: 0~1, 0=loose, 1=dense
+    // 想“更慢热”就把 40 改 50；想更快变难就改 30
+    const d = Math.max(0, Math.min(1, score / 40));
 
-  // 速度：缓慢上升（别太快，不然会“突然变难”）
-  speed = Math.min(520, 260 + 160 * d); // 260 -> 420（后面还会被passed加速一点点）
+    // 基础速度随分数上升（平滑）
+    speed = Math.min(520, 260 + 160 * d); // 260 -> 420（额外还会被 passed 微调）
 
-  // 连发概率：前期少，后期多
-  burstChance = 0.12 + 0.22 * d; // 0.12 -> 0.34
+    // 连发概率随分数上升
+    burstChance = 0.12 + 0.22 * d; // 0.12 -> 0.34
 
-  return d;
-}
- function nextGapPx(){
-  const d = updateDifficulty(); // 0~1
-
-  // base/jitter：d 越大越小 => 更密
-  // 前期：base≈220~260，后期：base≈110~140
-  const base = 230 - 110 * d;                 // 230 -> 120
-  const jitter = (240 - 140 * d) * Math.random(); // 240 -> 100
-
-  // 概率：前期更容易出现长空档；后期更多短空档
-  const longChance = 0.28 - 0.20 * d;  // 0.28 -> 0.08
-  const shortChance = 0.12 + 0.28 * d; // 0.12 -> 0.40
-
-  const r = Math.random();
-
-  // 长空档（前期多，后期少）
-  if(r < longChance){
-    return base + jitter + (340 - 180*d) + Math.random()*(360 - 220*d);
+    return d;
   }
 
-  // 短空档（后期明显变多）
-  if(r < longChance + shortChance){
-    return base*0.55 + Math.random()*(160 - 60*d);
+  // Uneven gap in px, controlled by difficulty
+  function nextGapPx(){
+    const d = updateDifficulty(); // ensure speed/burstChance updated
+
+    // 前期大间距，后期小间距
+    const base = 230 - 110 * d; // 230 -> 120
+    const jitter = (240 - 140 * d) * Math.random(); // 240 -> 100
+
+    // 前期更容易长空档；后期更多短空档
+    const longChance = 0.28 - 0.20 * d;  // 0.28 -> 0.08
+    const shortChance = 0.12 + 0.28 * d; // 0.12 -> 0.40
+
+    const r = Math.random();
+
+    if(r < longChance){
+      // 长空档：后期也会变短
+      return base + jitter + (340 - 180*d) + Math.random()*(360 - 220*d);
+    }
+    if(r < longChance + shortChance){
+      // 短空档：后期更短更常见
+      return base*0.55 + Math.random()*(160 - 60*d);
+    }
+    return base + jitter;
   }
 
-  // 常规空档
-  return base + jitter;
-}
-  function spawnObstacleAt(xStart){
-    const type = Math.random() < 0.5 ? 'flower' : 'rock';
-
+  // ===== Obstacles =====
+  function makeObstacle(type, xStart){
     const w = type === 'flower'
       ? 22 + Math.random()*10
       : 26 + Math.random()*12;
@@ -116,31 +101,56 @@
       ? 30 + Math.random()*16
       : 22 + Math.random()*14;
 
-    obstacles.push({
+    return {
       type,
       x: xStart,
       y: groundY + player.r - h,
       w,
       h
-    });
+    };
+  }
 
-    // 计算下一次生成位置
-    nextSpawnX = xStart + nextGapPx();
+  function spawnObstacleAt(xStart){
+    const type = Math.random() < 0.5 ? 'flower' : 'rock';
+    obstacles.push(makeObstacle(type, xStart));
 
-    // 18%：紧凑连发（让节奏更“不平均”）
+    // 偶尔“连发”一个更近的障碍（概率随难度上升）
     if(Math.random() < burstChance){
-      const tight = 60 + Math.random()*80; // 60~140px
-      const t2 = Math.random() < 0.5 ? 'flower' : 'rock';
-      const w2 = 22 + Math.random()*18;
-      const h2 = 22 + Math.random()*26;
+      const tight = 60 + Math.random()*90; // 60~150
+      const type2 = Math.random() < 0.5 ? 'flower' : 'rock';
 
-      obstacles.push({
-        type: t2,
-        x: xStart + tight,
-        y: groundY + player.r - h2,
-        w: w2,
-        h: h2
-      });
+      // 第二个障碍做一点随机变化（别太整齐）
+      const ob2 = makeObstacle(type2, xStart + tight);
+      ob2.w = 22 + Math.random()*18;
+      ob2.h = 22 + Math.random()*26;
+      ob2.y = groundY + player.r - ob2.h;
+
+      obstacles.push(ob2);
+    }
+  }
+
+  // ✅ 핵심修复：永远补到右侧足够远，保证不会空场
+  function spawnUntilFilled(){
+    const targetX = canvas.clientWidth + 900;
+
+    // 找当前最右边的障碍末端
+    let rightMostEnd = obstacles.length
+      ? Math.max(...obstacles.map(o => o.x + o.w))
+      : -Infinity;
+
+    // 如果场上空了：立刻给一个起始障碍
+    if(!obstacles.length){
+      spawnObstacleAt(canvas.clientWidth + 200);
+      rightMostEnd = Math.max(...obstacles.map(o => o.x + o.w));
+    }
+
+    // 一直补到足够远
+    let guard = 0; // 防止极端情况死循环
+    while(rightMostEnd < targetX && guard < 60){
+      const xStart = rightMostEnd + nextGapPx();
+      spawnObstacleAt(xStart);
+      rightMostEnd = Math.max(...obstacles.map(o => o.x + o.w));
+      guard++;
     }
   }
 
@@ -187,7 +197,7 @@
     }
   }, {passive:false});
 
-  // ===== Collision: circle vs "approx circle" obstacle =====
+  // ===== Collision: circle vs approx circle =====
   function hitObstacle(ob, cx, cy, cr){
     const ox = ob.x + ob.w*0.5;
     const oy = ob.y + ob.h*0.5;
@@ -211,30 +221,30 @@
   }
 
   function drawPerson(x, y, r){
-    // 头
+    // Head
     ctx.fillStyle = 'rgba(255,255,255,.95)';
     ctx.beginPath();
     ctx.arc(x, y - r*0.9, r*0.55, 0, Math.PI*2);
     ctx.fill();
 
-    // 身体/四肢
+    // Body + limbs
     ctx.lineWidth = 3;
     ctx.strokeStyle = 'rgba(255,255,255,.9)';
     ctx.lineCap = 'round';
 
-    // 身体
+    // Body
     ctx.beginPath();
     ctx.moveTo(x, y - r*0.35);
     ctx.lineTo(x, y + r*0.6);
     ctx.stroke();
 
-    // 手
+    // Arms
     ctx.beginPath();
     ctx.moveTo(x - r*0.65, y);
     ctx.lineTo(x + r*0.65, y);
     ctx.stroke();
 
-    // 腿
+    // Legs
     ctx.beginPath();
     ctx.moveTo(x, y + r*0.6);
     ctx.lineTo(x - r*0.6, y + r*1.3);
@@ -248,7 +258,7 @@
     roundRect(x, y, w, h, 6);
     ctx.fill();
 
-    // 小高光
+    // highlight
     ctx.fillStyle = 'rgba(255,255,255,.18)';
     roundRect(x + w*0.14, y + h*0.18, w*0.34, h*0.22, 5);
     ctx.fill();
@@ -258,7 +268,7 @@
     const cx = x + w*0.5;
     const cy = y + h*0.4;
 
-    // 茎
+    // stem
     ctx.strokeStyle = 'rgba(143,184,168,.95)';
     ctx.lineWidth = 3;
     ctx.beginPath();
@@ -266,7 +276,7 @@
     ctx.lineTo(cx, cy + h*0.25);
     ctx.stroke();
 
-    // 花瓣
+    // petals
     ctx.fillStyle = 'rgba(214,179,106,.95)';
     const pr = Math.min(w,h)*0.12;
     const R = Math.min(w,h)*0.22;
@@ -284,7 +294,7 @@
       ctx.fill();
     }
 
-    // 花心
+    // center
     ctx.fillStyle = 'rgba(255,255,255,.88)';
     ctx.beginPath();
     ctx.arc(cx, cy, pr*0.9, 0, Math.PI*2);
@@ -292,7 +302,7 @@
   }
 
   function drawCloud(x, y, w, h){
-    ctx.fillStyle = 'rgba(255,255,255,.10)';
+    ctx.fillStyle = 'rgba(255,255,255,.10)'; // 想更明显：把 .10 改 .14/.16
     ctx.beginPath();
     ctx.ellipse(x, y, w*0.32, h*0.55, 0, 0, Math.PI*2);
     ctx.ellipse(x + w*0.22, y - h*0.18, w*0.30, h*0.60, 0, 0, Math.PI*2);
@@ -301,19 +311,22 @@
   }
 
   function drawSky(){
-    // 月亮（圆月）
     const mx = canvas.clientWidth - 90;
     const my = 46;
 
-    ctx.globalAlpha = 1;
+    // halo
+    ctx.beginPath();
+    ctx.arc(mx, my, 34, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(214,179,106,.06)';
+    ctx.fill();
 
-    // 月体
+    // moon
     ctx.beginPath();
     ctx.arc(mx, my, 18, 0, Math.PI*2);
     ctx.fillStyle = 'rgba(255,255,255,.18)';
     ctx.fill();
 
-    // 云（漂移循环）
+    // clouds
     for(const c of clouds){
       const vx = ((c.x + cloudOffset * 70 * c.k) % (canvas.clientWidth + 120)) - 60;
       drawCloud(vx, c.y, 46 * c.s, 18 * c.s);
@@ -324,10 +337,10 @@
   function draw(){
     ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight);
 
-    // 天空（月+云）
+    // sky first
     drawSky();
 
-    // 地面线
+    // ground
     ctx.beginPath();
     ctx.moveTo(0, groundY + player.r + 6);
     ctx.lineTo(canvas.clientWidth, groundY + player.r + 6);
@@ -335,25 +348,21 @@
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // 玩家
+    // player
     drawPerson(player.x, player.y, player.r);
 
-    // 障碍
+    // obstacles
     for(const ob of obstacles){
-      if(ob.type === 'flower'){
-        drawFlower(ob.x, ob.y, ob.w, ob.h);
-      }else{
-        drawRock(ob.x, ob.y, ob.w, ob.h);
-      }
+      if(ob.type === 'flower') drawFlower(ob.x, ob.y, ob.w, ob.h);
+      else drawRock(ob.x, ob.y, ob.w, ob.h);
     }
 
-    // 状态提示
+    // hints
     if(!running && !gameOver){
       ctx.fillStyle = 'rgba(255,255,255,.70)';
       ctx.font = '14px "Songti SC","STSong","SimSun",serif';
       ctx.fillText('点击“开始”或直接点画布开始', 18, 26);
     }
-
     if(gameOver){
       ctx.fillStyle = 'rgba(255,255,255,.90)';
       ctx.font = '16px "Songti SC","STSong","SimSun",serif';
@@ -361,7 +370,7 @@
     }
   }
 
-  // ===== Game Loop =====
+  // ===== Loop =====
   let lastT = 0;
   function loop(t){
     if(!running) return;
@@ -371,7 +380,7 @@
 
     cloudOffset += dt;
 
-    // 物理
+    // physics
     const g = 1400;
     player.vy += g * dt;
     player.y += player.vy * dt;
@@ -382,12 +391,12 @@
       player.jumping = false;
     }
 
-    // 移动障碍
+    // move obstacles
     for(const ob of obstacles){
       ob.x -= speed * dt;
     }
 
-    // 回收出屏 + 计分（每个越过+1）
+    // recycle + score
     let passed = 0;
     obstacles = obstacles.filter(ob => {
       const gone = (ob.x + ob.w) < 0;
@@ -397,24 +406,17 @@
 
     if(passed > 0){
       score += passed;
-      speed = Math.min(520, speed + 10 * passed);
+
+      // 只给一点点额外加速（主要难度来自曲线）
+      speed = Math.min(520, speed + 4 * passed);
+
       elScore.textContent = '得分：' + score;
     }
 
-    // 保持场上至少 2 个障碍，并按 nextSpawnX 继续往右生成
-    // 生成条件：最右侧障碍离屏幕右侧不够远时，继续补
-    const rightMostX = obstacles.length
-      ? Math.max(...obstacles.map(o => o.x))
-      : -Infinity;
+    // ✅ ensure always filled (fix long empty gap)
+    spawnUntilFilled();
 
-    if(rightMostX < canvas.clientWidth + 280){
-      // 生成到 nextSpawnX（可能连续补几个）
-      while(nextSpawnX < canvas.clientWidth + 900){
-        spawnObstacleAt(nextSpawnX);
-      }
-    }
-
-    // 碰撞检测
+    // collision
     for(const ob of obstacles){
       if(hitObstacle(ob, player.x, player.y, player.r)){
         running = false;
@@ -429,14 +431,30 @@
     requestAnimationFrame(loop);
   }
 
-  // ===== Resize =====
+  // ===== Reset / Resize =====
+  function reset(){
+    running = false;
+    gameOver = false;
+    score = 0;
+
+    speed = 260;
+    burstChance = 0.12;
+
+    player.y = groundY;
+    player.vy = 0;
+    player.jumping = false;
+
+    obstacles = [];
+    spawnUntilFilled();
+
+    elScore.textContent = '得分：0';
+    draw();
+  }
+
   function onResize(){
     resizeCanvasForDPR();
-    // 重置生成基准，避免缩放后空场太久
-    if(!obstacles.length){
-      nextSpawnX = canvas.clientWidth + 80;
-      spawnObstacleAt(nextSpawnX);
-    }
+    // resize后重新补齐，避免空档/断层
+    if(!obstacles.length) spawnUntilFilled();
     draw();
   }
 
@@ -445,5 +463,4 @@
   reset();
   onResize();
   window.addEventListener('resize', onResize);
-
 })();
