@@ -131,7 +131,7 @@
 
   // ✅ 핵심修复：永远补到右侧足够远，保证不会空场
   function spawnUntilFilled(){
-    const targetX = canvas.clientWidth + 900;
+    const targetX = canvas.clientWidth + 400;
 
     // 找当前最右边的障碍末端
     let rightMostEnd = obstacles.length
