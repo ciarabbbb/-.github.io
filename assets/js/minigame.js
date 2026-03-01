@@ -66,8 +66,8 @@
   // ===== Uneven obstacle spacing =====
   function nextGapPx(){
     // 速度越快，平均间距略增（避免后期太难/太密）
-    const base = 120 + (speed - 260) * 0.12;
-    const jitter = 120 * Math.random();
+    const base = 100 + (speed - 260) * 0.12;
+    const jitter = 100 * Math.random();
 
     // 25%：超长空档
     if(Math.random() < 0.25){
@@ -282,12 +282,6 @@
     const my = 46;
 
     ctx.globalAlpha = 1;
-
-    // 月晕
-    ctx.beginPath();
-    ctx.arc(mx, my, 34, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(214,179,106,.06)';
-    ctx.fill();
 
     // 月体
     ctx.beginPath();
