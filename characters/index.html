@@ -177,11 +177,63 @@
       transition: transform .16s ease, border-color .16s ease, background .16s ease;
       position:relative;
       min-height: 230px;
+      cursor: pointer;
     }
     .card:hover{
       transform: translateY(-2px);
       border-color: rgba(255,255,255,.24);
       background: rgba(10,12,18,.55);
+    }
+    .card.add-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10,12,18,.25);
+      border-style: dashed;
+    }
+    .card.add-card .add-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px dashed rgba(255,255,255,.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: rgba(255,255,255,.6);
+      transition: all .2s ease;
+    }
+    .card.add-card:hover .add-icon {
+      color: rgba(255,255,255,.9);
+      border-color: rgba(255,255,255,.6);
+      transform: scale(1.1);
+    }
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,120,120,.15);
+      border: 1px solid rgba(255,120,120,.3);
+      color: rgba(255,120,120,.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0;
+      transition: all .2s ease;
+    }
+    .card:not(.add-card):hover .delete-btn {
+      opacity: 1;
+    }
+    .delete-btn:hover {
+      background: rgba(255,120,120,.25);
+      border-color: rgba(255,120,120,.5);
+      color: rgba(255,120,120,1);
     }
     .thumb{
       height: 160px;
@@ -204,10 +256,15 @@
     }
     .name{
       padding: 12px 12px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
     }
     .name b{
       letter-spacing:.18em;
@@ -216,6 +273,15 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
+    }
+    .poem {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
     }
     .tag{
       font-size: 11px;
@@ -263,7 +329,7 @@
     .form{
       margin-top: 12px;
       display:grid;
-      grid-template-columns: 1.2fr 1.2fr .8fr;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
     @media (max-width: 820px){
@@ -291,6 +357,9 @@
       font-size: 13px;
       letter-spacing:.08em;
       font-family: inherit;
+    }
+    .field.poem-field {
+      grid-column: 1 / -1;
     }
     .rowBtns{
       display:flex;
@@ -346,6 +415,11 @@
       color: rgba(255,255,255,.60);
       letter-spacing: .04em;
     }
+    
+    /* 导出按钮样式 */
+    .export-btn {
+      margin-left: 8px;
+    }
   </style>
 </head>
 
@@ -361,20 +435,21 @@
         </div>
         <div class="title">
           <b>人物</b>
-          <small>OC 集合 · 图片 + 名字 · 可本地增删改</small>
+          <small>设定 | 小传 | 立绘 | 关系网 </small>
         </div>
       </div>
 
       <div class="actions">
         <a class="pill" href="../index.html">返回首页</a>
         <button class="pill" id="btnToggleAdmin" type="button">管理</button>
+        <button class="pill export-btn" id="btnExport" type="button">导出数据</button>
       </div>
     </div>
 
     <header class="header">
-      <h1>人物</h1>
-      <p>点击卡片进入人物页（后续我们再做人物详情页）。</p>
-      <div class="divider"><span>山月不知心里事</span></div>
+      <h1>人物合集</h1>
+      <p id="headerDesc">点击跳转至人物详情页</p>
+      <div class="divider"><span>梦里不知身是客，一晌贪欢</span></div>
     </header>
 
     <!-- Admin Panel -->
@@ -382,19 +457,24 @@
       <div class="panelTop">
         <div>
           <h2>管理面板</h2>
-          <p>新增 / 编辑 / 删除 OC（数据存浏览器 localStorage，适合快速维护）。</p>
+          <p>点击编辑 OC 信息 [ 仅限本地储存 ] </p>
         </div>
       </div>
 
       <div class="form" aria-label="form">
         <div class="field">
           <label for="ocName">名字</label>
-          <input id="ocName" placeholder="例如：姜朔妜 / 还朔" />
+          <input id="ocName" placeholder="例如：张蓝" />
         </div>
 
         <div class="field">
           <label for="ocTag">标签（可选）</label>
-          <input id="ocTag" placeholder="例如：玄都 / 昙庭 / 主角" />
+          <input id="ocTag" placeholder="例如：玄都 / 昙庭 / 浮陆" />
+        </div>
+
+        <div class="field poem-field">
+          <label for="ocPoem">一句话描述（可选）</label>
+          <input id="ocPoem" placeholder="例如：- 人生如寄，多忧何为 -" />
         </div>
 
         <div class="field">
@@ -402,20 +482,18 @@
           <input id="ocImage" type="file" accept="image/*" />
         </div>
 
-        <div class="field" style="grid-column:1 / -1;">
-          <label for="ocPick">选择要编辑/删除的 OC</label>
+        <div class="field">
+          <label for="ocPick">当前编辑的 OC</label>
           <select id="ocPick"></select>
         </div>
       </div>
 
       <div class="rowBtns">
-        <button class="btn" id="btnAdd" type="button">新增</button>
-        <button class="btn" id="btnUpdate" type="button">保存编辑</button>
-        <button class="btn danger" id="btnDelete" type="button">删除</button>
+        <button class="btn" id="btnSave" type="button">保存修改</button>
       </div>
 
       <div class="mini">
-        <span>提示：你也可以把数据导出成 JSON，然后提交到 GitHub（就能跨设备同步）。</span>
+        <span>提示：“导出数据”可跨设备保存，请联系管理员。</span>
         <span class="mono" id="storageHint">storage: characters_v1</span>
       </div>
     </section>
@@ -433,31 +511,57 @@
       {
         id: cryptoId(),
         name: "还朔",
-        tag: "主线",
+        tag: "昙庭-浮陆",
+        poem: "- 今宵剩把银缸照，相逢犹恐是梦中 -",
         img: makePlaceholder("还朔")
       },
       {
         id: cryptoId(),
         name: "羲姮",
-        tag: "昙庭",
-        img: makePlaceholder("羲姮")
+        tag: "昙庭-凌虚",
+        poem: "- 披石兰兮带杜衡，折芳馨兮遗所思 -",
+        img: makePlaceholder("从羲")
       },
       {
         id: cryptoId(),
         name: "迟樾",
         tag: "玄都",
+        poem: "- 旧游无处不堪寻 -",
         img: makePlaceholder("迟樾")
       },
       {
         id: cryptoId(),
         name: "芜青",
-        tag: "前尘",
+        tag: "凌虚",
+        poem: "- 江南无所有，聊赠一枝春 -",
         img: makePlaceholder("芜青")
+      },
+      {
+        id: cryptoId(),
+        name: "曜衡",
+        tag: "凌虚",
+        poem: "-  -",
+        img: makePlaceholder("曜衡")
+      },
+      {
+        id: cryptoId(),
+        name: "祝飞红",
+        tag: "浮陆",
+        poem: "- 忽于水底见青山 -",
+        img: makePlaceholder("祝飞红")
+      },
+      {
+        id: cryptoId(),
+        name: "江行",
+        tag: "昙庭",
+        poem: "- 人海阔，无日不风波 -",
+        img: makePlaceholder("江行")
       },
     ];
 
     // ===== State =====
     let items = load() ?? null;
+    let isAdminMode = false; // 标记是否处于管理模式
     if(!items){
       items = DEFAULTS;
       save(items);
@@ -465,134 +569,232 @@
 
     // ===== DOM =====
     const grid = document.getElementById('grid');
+    const headerDesc = document.getElementById('headerDesc');
 
     const adminPanel = document.getElementById('adminPanel');
     const btnToggleAdmin = document.getElementById('btnToggleAdmin');
+    const btnExport = document.getElementById('btnExport');
 
     const ocName = document.getElementById('ocName');
     const ocTag = document.getElementById('ocTag');
+    const ocPoem = document.getElementById('ocPoem');
     const ocImage = document.getElementById('ocImage');
     const ocPick = document.getElementById('ocPick');
 
-    const btnAdd = document.getElementById('btnAdd');
-    const btnUpdate = document.getElementById('btnUpdate');
-    const btnDelete = document.getElementById('btnDelete');
+    const btnSave = document.getElementById('btnSave');
 
     // ===== UI =====
+    // 切换管理模式
     btnToggleAdmin.addEventListener('click', () => {
-      adminPanel.classList.toggle('show');
-      btnToggleAdmin.textContent = adminPanel.classList.contains('show') ? '收起管理' : '管理';
+      isAdminMode = !isAdminMode;
+      adminPanel.classList.toggle('show', isAdminMode);
+      btnToggleAdmin.textContent = isAdminMode ? '退出管理' : '管理';
+      
+      // 更新提示文字
+      headerDesc.textContent = isAdminMode 
+        ? "点击卡片编辑OC信息，点击+添加新OC，点击-删除OC。" 
+        : "点击卡片进入人物页（后续我们再做人物详情页）。";
+      
+      // 重新渲染网格
+      render();
+    });
+
+    // 导出数据按钮
+    btnExport.addEventListener('click', () => {
+      try {
+        const data = JSON.stringify(items, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `oc-characters-${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        
+        URL.revokeObjectURL(url);
+        alert('数据导出成功！请将此文件更新到GitHub仓库中。');
+      } catch (e) {
+        alert('导出失败：' + e.message);
+      }
     });
 
     function render(){
-      // grid
-      grid.innerHTML = items.map(it => cardHTML(it)).join('');
+      // 渲染OC卡片 + 添加按钮
+      let gridHTML = items.map(it => cardHTML(it)).join('');
+      // 管理模式下添加+按钮卡片
+      if (isAdminMode) {
+        gridHTML += `
+          <div class="card add-card" id="addCard" aria-label="添加新OC">
+            <div class="add-icon">+</div>
+          </div>
+        `;
+      }
+      grid.innerHTML = gridHTML;
 
-      // pick list
+      // 更新下拉选择列表
       ocPick.innerHTML = items.map(it => `<option value="${it.id}">${escapeHtml(it.name)}${it.tag ? ' · ' + escapeHtml(it.tag) : ''}</option>`).join('');
 
-      // click handlers (enter detail later)
+      // 绑定卡片点击事件
       grid.querySelectorAll('[data-id]').forEach(el => {
-        el.addEventListener('click', () => {
+        el.addEventListener('click', (e) => {
+          // 阻止事件冒泡，避免删除按钮点击时触发卡片编辑
+          if (e.target.classList.contains('delete-btn')) return;
+          
           const id = el.getAttribute('data-id');
-          // 先占位：将来我们做 characters/<id>.html 或 ?id=xxx
-          alert('后续做人物详情页：' + (items.find(x => x.id === id)?.name ?? ''));
+          if (isAdminMode) {
+            // 管理模式下：点击卡片选中并填充到编辑表单
+            ocPick.value = id;
+            fillFormFromPick();
+          } else {
+            // 非管理模式下：占位的详情页提示
+            alert('后续做人物详情页：' + (items.find(x => x.id === id)?.name ?? ''));
+          }
         });
       });
 
-      // load selected into form
-      if(items.length){
-        if(!items.find(x => x.id === ocPick.value)){
-          ocPick.value = items[0].id;
-        }
+      // 绑定删除按钮事件
+      grid.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation(); // 阻止冒泡到卡片点击
+          const id = btn.getAttribute('data-id');
+          deleteOC(id);
+        });
+      });
+
+      // 绑定添加OC按钮事件
+      const addCard = document.getElementById('addCard');
+      if (addCard) {
+        addCard.addEventListener('click', addNewOC);
+      }
+
+      // 初始化表单（选中第一个OC）
+      if(items.length && ocPick.options.length > 0 && !ocPick.value){
+        ocPick.value = items[0].id;
         fillFormFromPick();
       }
     }
 
     function cardHTML(it){
       return `
-        <a class="card" href="javascript:void(0)" data-id="${it.id}" aria-label="${escapeHtml(it.name)}">
+        <div class="card" data-id="${it.id}" aria-label="${escapeHtml(it.name)}">
+          ${isAdminMode ? `<div class="delete-btn" data-id="${it.id}">-</div>` : ''}
           <div class="thumb">
             <img src="${it.img}" alt="${escapeHtml(it.name)}" loading="lazy" />
           </div>
           <div class="name">
-            <b>${escapeHtml(it.name)}</b>
-            <span class="tag">${escapeHtml(it.tag || "OC")}</span>
+            <div class="name-row">
+              <b>${escapeHtml(it.name)}</b>
+              <span class="tag">${escapeHtml(it.tag || "OC")}</span>
+            </div>
+            ${it.poem ? `<div class="poem">${escapeHtml(it.poem)}</div>` : ''}
           </div>
-        </a>
+        </div>
       `;
     }
 
+    // 从选中的OC填充表单
     function fillFormFromPick(){
       const it = items.find(x => x.id === ocPick.value);
       if(!it) return;
       ocName.value = it.name || '';
       ocTag.value = it.tag || '';
-      ocImage.value = ''; // file input cannot be set programmatically
+      ocPoem.value = it.poem || '';
+      ocImage.value = ''; // 文件输入框无法编程设置值
     }
 
+    // OC选择变更时更新表单
     ocPick.addEventListener('change', fillFormFromPick);
 
-    // ===== Actions =====
-    btnAdd.addEventListener('click', async () => {
-      const name = ocName.value.trim();
-      if(!name){
-        alert('请先填名字');
-        return;
-      }
-      const tag = ocTag.value.trim();
-      const img = await readImageAsDataURL(ocImage.files?.[0]) || makePlaceholder(name);
-
-      items.unshift({
+    // ===== 核心操作函数 =====
+    // 添加新OC
+    function addNewOC() {
+      // 创建新OC对象
+      const newOC = {
         id: cryptoId(),
-        name,
-        tag,
-        img
-      });
+        name: "新角色",
+        tag: "未分类",
+        poem: "",
+        img: makePlaceholder("新角色")
+      };
 
+      // 添加到数组并保存
+      items.unshift(newOC);
       save(items);
+      
+      // 更新UI
       render();
-      // auto select newest
-      ocPick.value = items[0].id;
+      ocPick.value = newOC.id;
       fillFormFromPick();
-    });
+      
+      // 聚焦到名字输入框，方便编辑
+      ocName.focus();
+      ocName.select();
+    }
 
-    btnUpdate.addEventListener('click', async () => {
-      const id = ocPick.value;
+    // 删除OC
+    function deleteOC(id) {
       const it = items.find(x => x.id === id);
       if(!it) return;
+
+      // 确认删除弹窗
+      const confirmDelete = confirm(`确定删除该角色「${it.name}」吗？`);
+      if(!confirmDelete) return;
+
+      // 从数组中移除并保存
+      items = items.filter(x => x.id !== id);
+      save(items);
+      
+      // 更新UI
+      render();
+      
+      // 如果删除后还有OC，选中第一个
+      if (items.length > 0 && ocPick.options.length > 0) {
+        ocPick.value = items[0].id;
+        fillFormFromPick();
+      } else {
+        // 清空表单
+        ocName.value = '';
+        ocTag.value = '';
+        ocPoem.value = '';
+        ocImage.value = '';
+      }
+    }
+
+    // 保存OC修改
+    btnSave.addEventListener('click', async () => {
+      const id = ocPick.value;
+      const it = items.find(x => x.id === id);
+      if(!it) {
+        alert('请先选择要编辑的OC');
+        return;
+      }
 
       const name = ocName.value.trim();
       if(!name){
         alert('名字不能为空');
+        ocName.focus();
         return;
       }
+      
+      // 更新OC信息
       it.name = name;
       it.tag = ocTag.value.trim();
+      it.poem = ocPoem.value.trim();
 
+      // 处理图片上传
       const newImg = await readImageAsDataURL(ocImage.files?.[0]);
       if(newImg) it.img = newImg;
 
+      // 保存并更新UI
       save(items);
       render();
       ocPick.value = id;
       fillFormFromPick();
+      
+      alert(`「${it.name}」的信息已保存！`);
     });
 
-    btnDelete.addEventListener('click', () => {
-      const id = ocPick.value;
-      const it = items.find(x => x.id === id);
-      if(!it) return;
-
-      const ok = confirm(`确定删除「${it.name}」吗？`);
-      if(!ok) return;
-
-      items = items.filter(x => x.id !== id);
-      save(items);
-      render();
-    });
-
-    // ===== Storage =====
+    // ===== 存储相关 =====
     function load(){
       try{
         const raw = localStorage.getItem(KEY);
@@ -604,13 +806,14 @@
         return null;
       }
     }
+    
     function save(data){
       localStorage.setItem(KEY, JSON.stringify(data));
     }
 
-    // ===== Helpers =====
+    // ===== 工具函数 =====
     function cryptoId(){
-      // stable enough for this use
+      // 生成唯一ID
       if(window.crypto?.getRandomValues){
         const arr = new Uint32Array(3);
         crypto.getRandomValues(arr);
@@ -620,6 +823,7 @@
     }
 
     function escapeHtml(s){
+      // HTML转义
       return String(s)
         .replaceAll('&','&amp;')
         .replaceAll('<','&lt;')
@@ -629,6 +833,7 @@
     }
 
     function readImageAsDataURL(file){
+      // 读取图片为DataURL
       return new Promise(resolve => {
         if(!file){
           resolve(null);
@@ -642,7 +847,7 @@
     }
 
     function makePlaceholder(text){
-      // simple SVG placeholder (no extra assets)
+      // 生成SVG占位图
       const t = (text || 'OC').slice(0, 6);
       const svg =
 `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600">
@@ -667,6 +872,7 @@
     }
 
     function escapeXml(s){
+      // XML转义
       return String(s)
         .replaceAll('&','&amp;')
         .replaceAll('<','&lt;')
@@ -675,7 +881,7 @@
         .replaceAll("'","&apos;");
     }
 
-    // init
+    // 初始化渲染
     render();
   </script>
 </body>
