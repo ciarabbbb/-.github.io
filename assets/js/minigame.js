@@ -66,8 +66,8 @@
   // ===== Uneven obstacle spacing =====
   function nextGapPx(){
     // 速度越快，平均间距略增（避免后期太难/太密）
-    const base = 170 + (speed - 260) * 0.25;
-    const jitter = 220 * Math.random();
+    const base = 120 + (speed - 260) * 0.12;
+    const jitter = 120 * Math.random();
 
     // 25%：超长空档
     if(Math.random() < 0.25){
