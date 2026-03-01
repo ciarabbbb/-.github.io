@@ -366,7 +366,7 @@
     if(gameOver){
       ctx.fillStyle = 'rgba(255,255,255,.90)';
       ctx.font = '16px "Songti SC","STSong","SimSun",serif';
-      ctx.fillText('劫障已至 · 点“重开”再来', 18, 26);
+      ctx.fillText('真是一对笑面虎，两头乌角鲨！', 18, 26);
     }
   }
 
@@ -421,7 +421,7 @@
       if(hitObstacle(ob, player.x, player.y, player.r)){
         running = false;
         gameOver = true;
-        elScore.textContent = '得分：' + score + ' · 败于劫障';
+        elScore.textContent = '得分：' + score + ' · 是这个乱世害了你啊！';
         draw();
         return;
       }
