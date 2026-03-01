@@ -66,16 +66,18 @@ Suggested repo structure:
       justify-content:center;
       padding: 28px 18px 42px;
     }
-    .hero::before{
+   .hero::before{
       content:"";
-      position:absolute; inset:0;
+      position:absolute;
+      inset:0;
+
       background:
-        linear-gradient(180deg, rgba(6,8,12,.30), rgba(6,8,12,.88)),
+        linear-gradient(180deg, rgba(6,8,12,.55), rgba(6,8,12,.75)),
         url("assets/img/hero.jpg");
-      background-size: cover;
-      background-position: center;
-      filter: saturate(92%) contrast(104%);
-      transform: scale(1.02);
+
+      background-size: 800px; /* 控制纹理密度 */
+      background-repeat: repeat;
+      opacity: 0.85;
     }
     .hero::after{
       content:"";
