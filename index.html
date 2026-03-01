@@ -1,29 +1,35 @@
+<!--
+Save as: index.html
+Make sure your font file is EXACTLY here (case-sensitive):
+  /assets/fonts/mingzhaohui.woff2
+
+Make sure your background texture is here:
+  /assets/img/texture.jpg
+
+And these portal images (if you use them):
+  /assets/img/portal-world.jpg
+  /assets/img/portal-characters.jpg
+  /assets/img/portal-other.jpg
+-->
 <!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>踏莎行</title>
-  <meta name="description" content="东方仙侠世界观设定集合站" />
+  <title>几度春秋</title>
 
   <style>
-    /* ===== Font: Huiwen Mincho (local) =====
-       Put files into:
-         /assets/fonts/HuiwenMincho.woff2
-         /assets/fonts/HuiwenMincho.woff
-    */
+    /* ===== ONLY woff2 font ===== */
     @font-face{
-      @font-face{
-  font-family: "HuiwenMincho";
-  src: url("assets/fonts/mingzhaohui.woff2") format("woff2");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
+      font-family: "MingZhaoHui";
+      src: url("assets/fonts/mingzhaohui.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
 
     :root{
       --bg0:#070a10;
-      --ink:#0b0f18;
       --gold:#d6b36a;
       --jade:#8fb8a8;
       --line:rgba(255,255,255,.16);
@@ -33,21 +39,22 @@
       --shadow: 0 20px 60px rgba(0,0,0,.45);
       --radius: 22px;
     }
+
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
       margin:0;
+      color:var(--text);
       background:
         radial-gradient(900px 600px at 15% 0%, rgba(143,184,168,.12), transparent 55%),
         radial-gradient(900px 600px at 85% 10%, rgba(214,179,106,.12), transparent 58%),
         linear-gradient(180deg, var(--bg0), #06070b 60%, #06070b);
-      color:var(--text);
-      font-family: "HuiwenMincho", serif;
+      font-family: "MingZhaoHui", serif;
       overflow-x:hidden;
     }
     a{ color:inherit; text-decoration:none; }
 
-    /* ===== Hero ===== */
+    /* ===== Hero background: texture.jpg ===== */
     .hero{
       position:relative;
       min-height: 92vh;
@@ -56,8 +63,6 @@
       justify-content:center;
       padding: 28px 18px 42px;
     }
-
-    /* Background texture (requested): assets/img/texture.jpg */
     .hero::before{
       content:"";
       position:absolute; inset:0;
@@ -67,7 +72,7 @@
         radial-gradient(900px 420px at 85% 75%, rgba(214,179,106,.08), transparent 60%),
         linear-gradient(180deg, rgba(6,8,12,.62), rgba(6,8,12,.78)),
         url("assets/img/texture.jpg");
-      background-size: auto, auto, auto, auto, 900px; /* texture density */
+      background-size: auto, auto, auto, auto, 900px;
       background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
       background-position: center, center, center, center, center;
       filter: contrast(105%) saturate(92%);
@@ -90,6 +95,7 @@
       border: 1px solid rgba(255,255,255,.18);
       border-radius: 18px;
       opacity:.45;
+      pointer-events:none;
     }
     .corner.tl{ top:14px; left:14px; border-right:none; border-bottom:none; }
     .corner.tr{ top:14px; right:14px; border-left:none; border-bottom:none; }
@@ -97,6 +103,7 @@
     .corner.br{ bottom:14px; right:14px; border-left:none; border-top:none; }
 
     .inner{
+      position:relative;
       padding: 46px 26px 34px;
       display:grid;
       gap: 20px;
@@ -137,6 +144,7 @@
     .markText b{
       letter-spacing:.20em;
       font-size: 13px;
+      font-weight: 600;
     }
     .markText small{
       display:block;
@@ -167,15 +175,12 @@
     }
 
     /* ===== Title block ===== */
-    .titleBlock{
-      text-align:center;
-      padding: 10px 8px 0;
-    }
+    .titleBlock{ text-align:center; padding: 10px 8px 0; }
     .mainTitle{
       margin: 10px 0 8px;
       font-size: clamp(44px, 6vw, 72px);
       letter-spacing: .22em;
-      font-weight: 800;
+      font-weight: 700;
       text-shadow: 0 20px 60px rgba(0,0,0,.55);
     }
     .subTitle{
@@ -228,7 +233,6 @@
       background: rgba(10,12,18,.54);
     }
 
-    /* Top image area */
     .portalTop{
       position:relative;
       height: 118px;
@@ -241,17 +245,18 @@
       background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.62));
       z-index:1;
     }
-    .portal:nth-child(1) .portalTop{ background: url("assets/img/portal-world.jpg") center/cover; }
-    .portal:nth-child(2) .portalTop{ background: url("assets/img/portal-characters.jpg") center/cover; }
-    .portal:nth-child(3) .portalTop{ background: url("assets/img/portal-other.jpg") center/cover; }
 
-    /* Halo (smaller; won't exceed portalTop) */
+    .portal.world .portalTop{ background: url("assets/img/portal-world.jpg") center/cover; }
+    .portal.characters .portalTop{ background: url("assets/img/portal-characters.jpg") center/cover; }
+    .portal.other .portalTop{ background: url("assets/img/portal-other.jpg") center/cover; }
+
+    /* Halo smaller and inside top image area */
     .halo{
       position:absolute;
-      width: 86px; height: 86px;          /* smaller than before */
+      width: 86px; height: 86px;
       border-radius: 50%;
       left: 50%;
-      top: 98px;                           /* sits inside the top image area */
+      top: 98px;
       transform: translate(-50%, -50%);
       border: 1px solid rgba(255,255,255,.20);
       background:
@@ -266,13 +271,14 @@
     .halo svg{ opacity:.92; }
 
     .portalBody{
-      padding: 52px 16px 16px; /* less padding because halo is smaller */
+      padding: 52px 16px 16px;
       text-align:center;
     }
     .portalBody h3{
       margin:0;
       font-size: 18px;
       letter-spacing:.22em;
+      font-weight: 600;
     }
     .portalBody p{
       margin: 10px auto 0;
@@ -326,7 +332,7 @@
       background: linear-gradient(90deg, transparent, rgba(255,255,255,.30), transparent);
     }
 
-    /* ===== Updates area ===== */
+    /* ===== Updates ===== */
     .updates{
       margin-top: 18px;
       border-top: 1px solid rgba(255,255,255,.10);
@@ -346,16 +352,13 @@
       font-size: 13px;
       letter-spacing: .18em;
       color: rgba(255,255,255,.92);
+      font-weight: 600;
     }
-    .panel p, .panel li{
+    .panel p{
       margin:0;
       color: var(--muted);
       font-size: 13px;
       line-height: 1.8;
-    }
-    .panel ul{
-      margin:0;
-      padding-left: 18px;
     }
 
     .quickLinks{
@@ -390,7 +393,6 @@
       font-size: 12px;
     }
 
-    /* ===== Responsive ===== */
     @media (max-width: 940px){
       .updates{ grid-template-columns: 1fr; }
     }
@@ -405,10 +407,10 @@
 <body>
   <main class="hero">
     <div class="frame">
-      <div class="corner tl" aria-hidden="true"></div>
-      <div class="corner tr" aria-hidden="true"></div>
-      <div class="corner bl" aria-hidden="true"></div>
-      <div class="corner br" aria-hidden="true"></div>
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
 
       <div class="inner">
         <!-- Top bar -->
@@ -426,7 +428,6 @@
             </div>
           </div>
 
-          <!-- Top nav: 日志 / 导航 / 说明 -->
           <nav class="nav" aria-label="top nav">
             <a class="pill" href="log/index.html">日志</a>
             <a class="pill" href="nav/index.html">导航</a>
@@ -435,16 +436,15 @@
         </div>
 
         <!-- Title -->
-        <section class="titleBlock" aria-label="title">
+        <section class="titleBlock">
           <h1 class="mainTitle">几度春秋</h1>
           <p class="subTitle">— 欢迎来到仙侠世界观设定集合站 —</p>
           <div class="divider"><span>流水落花春去也，天上人间</span></div>
         </section>
 
         <!-- Portals -->
-        <section id="portals" class="portals" aria-label="portals">
-          <!-- World -->
-          <a class="portal" href="world/index.html">
+        <section class="portals" aria-label="portals">
+          <a class="portal world" href="world/index.html">
             <div class="portalTop"></div>
             <div class="halo" aria-hidden="true">
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
@@ -464,8 +464,7 @@
             </div>
           </a>
 
-          <!-- Characters -->
-          <a class="portal" href="characters/index.html">
+          <a class="portal characters" href="characters/index.html">
             <div class="portalTop"></div>
             <div class="halo" aria-hidden="true">
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
@@ -482,8 +481,7 @@
             </div>
           </a>
 
-          <!-- Other -->
-          <a class="portal" href="other/index.html">
+          <a class="portal other" href="other/index.html">
             <div class="portalTop"></div>
             <div class="halo" aria-hidden="true">
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
@@ -499,24 +497,20 @@
           </a>
         </section>
 
-        <!-- Guide line -->
         <div class="guide" aria-label="guide">
           <span class="line"></span>
-          <span class="dot" aria-hidden="true"></span>
+          <span class="dot"></span>
           <span>点击入口 · 跳转子页</span>
-          <span class="dot" aria-hidden="true"></span>
+          <span class="dot"></span>
           <span class="line"></span>
         </div>
 
-        <!-- Updates -->
-        <section id="updates" class="updates" aria-label="updates">
-          <!-- Left: latest updates -->
+        <section class="updates" aria-label="updates">
           <div class="panel">
             <h4>最新更新</h4>
             <p>【新增】：框架搭建更新</p>
           </div>
 
-          <!-- Right: quick links -->
           <div class="panel">
             <h4>便捷入口</h4>
             <div class="quickLinks">
@@ -527,7 +521,7 @@
           </div>
         </section>
 
-        <!-- (小游戏区域：你说先不写，这里先留空占位，后面再补) -->
+        <!-- Mini-game placeholder (you asked to skip for now) -->
         <!-- <section id="minigame" class="panel">...</section> -->
       </div>
     </div>
