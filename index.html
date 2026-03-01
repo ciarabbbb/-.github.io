@@ -240,20 +240,36 @@ Suggested (create these pages to avoid 404):
     }
 
     .portalTop{
-      position:relative;
-      height: 118px;
-      overflow:hidden;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-    }
-    .portalTop::before{
-      content:"";
-      position:absolute; inset:0;
-      background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.62));
-      z-index:1;
-    }
-    .portal.world .portalTop{ background: url("assets/img/portal-world.jpg") center/cover; }
-    .portal.characters .portalTop{ background: url("assets/img/portal-characters.jpg") center/cover; }
-    .portal.other .portalTop{ background: url("assets/img/portal-other.jpg") center/cover; }
+  position:relative;
+  height: 118px;
+  overflow:hidden;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  background: transparent; /* 不再直接在这里放背景图 */
+}
+
+/* ✅ 底图层（会被模糊） */
+.portalTop::after{
+  content:"";
+  position:absolute; inset:-10px; /* 外扩避免 blur 边缘露出 */
+  background-position: center;
+  background-size: cover;
+  filter: blur(8px);
+  transform: scale(1.08); /* 防止模糊边缘出现空白 */
+  z-index: 0;
+}
+
+/* ✅ 暗角/遮罩层（不模糊） */
+.portalTop::before{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.62));
+  z-index:1;
+}
+
+/* 给 ::after 指定不同入口的图片 */
+.portal.world .portalTop::after{ background-image: url("assets/img/portal-world.jpg"); }
+.portal.characters .portalTop::after{ background-image: url("assets/img/portal-characters.jpg"); }
+.portal.other .portalTop::after{ background-image: url("assets/img/portal-other.jpg"); }
 
     /* Halo: slightly higher + less transparent (nice on dark bg) */
     .halo{
@@ -618,7 +634,7 @@ Suggested (create these pages to avoid 404):
         <!-- ===== Mini Game ===== -->
         <section class="gameWrap" aria-label="mini game">
           <div class="gameHeader">
-            <h4>人间小试</h4>
+            <h4>小游戏</h4>
             <p class="hint">点画布 / 点“跳跃” / 键盘空格：跳 · 撞到劫障就结束</p>
           </div>
 
@@ -643,220 +659,6 @@ Suggested (create these pages to avoid 404):
     </div>
   </main>
 
-  <script>
-    // ===== Mini game: simple runner (mobile-friendly) =====
-    (function(){
-      const canvas = document.getElementById('mzCanvas');
-      const ctx = canvas.getContext('2d');
-
-      const elScore = document.getElementById('mzScore');
-      const btnStart = document.getElementById('mzStart');
-      const btnJump = document.getElementById('mzJump');
-      const btnRestart = document.getElementById('mzRestart');
-
-      // High-DPI crispness
-      function resizeCanvasForDPR(){
-        const dpr = Math.max(1, window.devicePixelRatio || 1);
-        const cssW = canvas.clientWidth;
-        const cssH = canvas.clientHeight;
-        canvas.width = Math.floor(cssW * dpr);
-        canvas.height = Math.floor(cssH * dpr);
-        ctx.setTransform(dpr,0,0,dpr,0,0);
-      }
-
-      // State
-      let running = false;
-      let gameOver = false;
-      let score = 0;
-
-      const groundY = 160;
-      const player = {
-        x: 60,
-        y: groundY,
-        r: 12,
-        vy: 0,
-        jumping: false,
-      };
-
-      let speed = 260; // px/s
-      let obstacle = null;
-
-      function reset(){
-        running = false;
-        gameOver = false;
-        score = 0;
-        speed = 260;
-        player.y = groundY;
-        player.vy = 0;
-        player.jumping = false;
-        obstacle = spawnObstacle();
-        elScore.textContent = '得分：0';
-        draw(0);
-      }
-
-      function spawnObstacle(){
-        // simple pillar
-        const w = 18 + Math.random() * 18;
-        const h = 34 + Math.random() * 26;
-        return {
-          x: canvas.clientWidth + 40,
-          y: groundY + player.r - h,
-          w,
-          h
-        };
-      }
-
-      function jump(){
-        if(!running || gameOver) return;
-        if(!player.jumping){
-          player.vy = -520;
-          player.jumping = true;
-        }
-      }
-
-      // Input (iPad friendly)
-      btnStart.addEventListener('click', () => {
-        if(!running && !gameOver){
-          running = true;
-          lastT = performance.now();
-          requestAnimationFrame(loop);
-        }
-      });
-
-      btnRestart.addEventListener('click', () => {
-        reset();
-      });
-
-      btnJump.addEventListener('click', () => {
-        jump();
-      });
-
-      // Tap/click canvas to jump
-      canvas.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        // if not running, start + jump
-        if(!running && !gameOver){
-          running = true;
-          lastT = performance.now();
-          requestAnimationFrame(loop);
-        }
-        jump();
-      }, {passive:false});
-
-      // Keyboard (desktop)
-      window.addEventListener('keydown', (e) => {
-        if(e.code === 'Space'){
-          e.preventDefault();
-          if(!running && !gameOver){
-            running = true;
-            lastT = performance.now();
-            requestAnimationFrame(loop);
-          }
-          jump();
-        }
-      }, {passive:false});
-
-      function rectHitCircle(rx, ry, rw, rh, cx, cy, cr){
-        // clamp
-        const x = Math.max(rx, Math.min(cx, rx + rw));
-        const y = Math.max(ry, Math.min(cy, ry + rh));
-        const dx = cx - x;
-        const dy = cy - y;
-        return (dx*dx + dy*dy) <= cr*cr;
-      }
-
-      function draw(dt){
-        // background
-        ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight);
-
-        // soft ground line
-        ctx.globalAlpha = 1;
-        ctx.beginPath();
-        ctx.moveTo(0, groundY + player.r + 6);
-        ctx.lineTo(canvas.clientWidth, groundY + player.r + 6);
-        ctx.strokeStyle = 'rgba(255,255,255,.18)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // player
-        ctx.beginPath();
-        ctx.arc(player.x, player.y, player.r, 0, Math.PI*2);
-        ctx.fillStyle = 'rgba(255,255,255,.92)';
-        ctx.fill();
-
-        // obstacle
-        ctx.fillStyle = 'rgba(214,179,106,.92)';
-        ctx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
-
-        // status text
-        if(!running && !gameOver){
-          ctx.fillStyle = 'rgba(255,255,255,.70)';
-          ctx.font = '14px "Songti SC","STSong","SimSun",serif';
-          ctx.fillText('点击“开始”或直接点画布开始', 18, 26);
-        }
-        if(gameOver){
-          ctx.fillStyle = 'rgba(255,255,255,.90)';
-          ctx.font = '16px "Songti SC","STSong","SimSun",serif';
-          ctx.fillText('劫障已至 · 点“重开”再来', 18, 26);
-        }
-      }
-
-      let lastT = 0;
-      function loop(t){
-        if(!running) return;
-        const dt = Math.min(0.035, (t - lastT) / 1000);
-        lastT = t;
-
-        // physics
-        const g = 1400; // px/s^2
-        player.vy += g * dt;
-        player.y += player.vy * dt;
-
-        if(player.y >= groundY){
-          player.y = groundY;
-          player.vy = 0;
-          player.jumping = false;
-        }
-
-        // move obstacle
-        obstacle.x -= speed * dt;
-
-        // pass obstacle
-        if(obstacle.x + obstacle.w < 0){
-          obstacle = spawnObstacle();
-          score += 1;
-          speed = Math.min(520, speed + 10);
-          elScore.textContent = '得分：' + score;
-        }
-
-        // collision
-        if(rectHitCircle(obstacle.x, obstacle.y, obstacle.w, obstacle.h, player.x, player.y, player.r)){
-          gameOver = true;
-          running = false;
-          elScore.textContent = '得分：' + score + ' · 败于劫障';
-          draw(dt);
-          return;
-        }
-
-        draw(dt);
-        requestAnimationFrame(loop);
-      }
-
-      // init
-      function onResize(){
-        resizeCanvasForDPR();
-        // re-place obstacle relative to new width
-        if(!obstacle) obstacle = spawnObstacle();
-        else obstacle.x = Math.min(obstacle.x, canvas.clientWidth + 40);
-        draw(0);
-      }
-
-      reset();
-      // Canvas uses CSS height 200px; set it explicitly so DPR resize has correct client size
-      canvas.style.height = '200px';
-      onResize();
-      window.addEventListener('resize', onResize);
-    })();
-  </script>
+ <script src="assets/js/minigame.js"></script>
 </body>
 </html>
