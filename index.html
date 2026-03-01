@@ -1,343 +1,182 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>踏莎行</title>
-  <meta name="description" content="东方仙侠世界观设定集合站" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>几度春秋</title>
 
-  <style>
-    /* ===== 核心变量：控制全局颜色 ===== */
-    :root{
-      --bg0:#070a10;            /* 基础深色背景 */
-      --gold:#d6b36a;           /* 金色点缀 */
-      --jade:#8fb8a8;           /* 翡翠色点缀 */
-      --line:rgba(255,255,255,.16);  /* 线条颜色 */
-      --line2:rgba(255,255,255,.10); /* 浅色线条 */
-      --text:rgba(255,255,255,.92);  /* 主文字颜色 */
-      --muted:rgba(255,255,255,.74); /* 次要文字/说明文字 */
-      --shadow: 0 20px 60px rgba(0,0,0,.45); /* 阴影 */
-      --radius: 22px;           /* 圆角大小 */
-    }
+<style>
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+/* =====================
+   全站统一宋体
+===================== */
 
-    body{
-      margin:0;
-      color:var(--text);
-      /* 这里的 radial-gradient 营造了角落的微弱光晕效果 */
-      background:
-        radial-gradient(900px 600px at 15% 0%, rgba(143,184,168,.12), transparent 55%),
-        radial-gradient(900px 600px at 85% 10%, rgba(214,179,106,.12), transparent 58%),
-        linear-gradient(180deg, var(--bg0), #06070b 60%, #06070b);
-      /* 宋体系列字体，营造仙侠感 */
-      font-family: "FangSong","STFangsong","Songti SC","STSong","Noto Serif SC","Source Han Serif SC",serif;
-      overflow-x:hidden;
-    }
-    a{ color:inherit; text-decoration:none; }
+*{
+  font-family: "Songti SC","STSong","SimSun","NSimSun",serif !important;
+}
 
-    /* ===== 英雄页背景纹理 ===== */
-    .hero{
-      position:relative;
-      min-height: 92vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 28px 18px 42px;
-    }
-    .hero::before{
-      content:"";
-      position:absolute; inset:0;
-      /* 这里的 url 改为您本地的质感图片路径 */
-      background:
-        radial-gradient(1200px 520px at 50% 20%, rgba(255,255,255,.08), transparent 62%),
-        radial-gradient(900px 420px at 20% 70%, rgba(143,184,168,.08), transparent 60%),
-        radial-gradient(900px 420px at 85% 75%, rgba(214,179,106,.08), transparent 60%),
-        linear-gradient(180deg, rgba(6,8,12,.62), rgba(6,8,12,.78)),
-        url("assets/img/texture.jpg");
-      background-size: auto, auto, auto, auto, 900px;
-      background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
-      background-position: center, center, center, center, center;
-      filter: contrast(105%) saturate(92%);
-    }
+body{
+  margin:0;
+  background:#0b0f16;
+  color:#f2f2f2;
+}
 
-    /* ===== 玻璃感外框 ===== */
-    .frame{
-      position:relative;
-      width:min(1080px, 100%);
-      border: 1px solid var(--line2);
-      border-radius: calc(var(--radius) + 10px);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      background: rgba(10,12,18,.40); /* 半透明黑色背景 */
-      overflow:hidden;
-    }
+/* =====================
+   你原本页面样式（简化）
+===================== */
 
-    /* 四角的装饰线 */
-    .corner{
-      position:absolute;
-      width: 90px; height: 90px;
-      border: 1px solid rgba(255,255,255,.18);
-      border-radius: 18px;
-      opacity:.45;
-      pointer-events:none;
-    }
-    .corner.tl{ top:14px; left:14px; border-right:none; border-bottom:none; }
-    .corner.tr{ top:14px; right:14px; border-left:none; border-bottom:none; }
-    .corner.bl{ bottom:14px; left:14px; border-right:none; border-top:none; }
-    .corner.br{ bottom:14px; right:14px; border-left:none; border-top:none; }
+.hero{
+  padding:60px 20px;
+  text-align:center;
+}
 
-    .inner{
-      position:relative;
-      padding: 46px 26px 34px;
-      display:grid;
-      gap: 20px;
-    }
+.mainTitle{
+  font-size:56px;
+  letter-spacing:.25em;
+  margin-bottom:10px;
+}
 
-    /* ===== 顶部导航栏 ===== */
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding: 12px 14px;
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-    }
-    .mark{ display:flex; align-items:center; gap:10px; padding-left:6px; }
-    .seal{
-      width: 28px; height: 28px; border-radius: 50%;
-      border: 1px solid rgba(255,255,255,.18);
-      display:grid; place-items:center;
-      background: rgba(255,255,255,.05);
-    }
-    .markText b{ letter-spacing:.20em; font-size: 13px; font-weight: 700; }
-    .markText small{ display:block; margin-top:3px; color: var(--muted); font-size: 11px; }
+.subTitle{
+  opacity:.7;
+  letter-spacing:.2em;
+}
 
-    .nav{ display:flex; gap:8px; }
-    .pill{
-      padding: 8px 12px; border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-      color: var(--muted); font-size: 12px;
-      transition: all .2s;
-    }
-    .pill:hover{ background: rgba(255,255,255,.1); color: #fff; }
+.section{
+  margin-top:60px;
+}
 
-    /* ===== 标题区域 ===== */
-    .titleBlock{ text-align:center; padding-top: 10px; }
-    .mainTitle{
-      margin: 10px 0 8px;
-      font-size: clamp(44px, 6vw, 72px);
-      letter-spacing:.25em;
-      font-weight: 800;
-      font-family: "Songti SC", "STSong", serif;
-    }
-    .subTitle{ color: var(--muted); font-size: 13px; letter-spacing: .22em; }
-    .divider{
-      margin: 18px auto 0; width: min(620px, 92%);
-      display:flex; align-items:center; gap:14px; color: rgba(255,255,255,.55);
-    }
-    .divider::before, .divider::after{
-      content:""; height:1px; flex:1;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.26), transparent);
-    }
+/* =====================
+   小游戏样式
+===================== */
 
-    /* ===== 传送门入口（世界/人物/其他） ===== */
-    .portals{
-      margin-top: 18px;
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    .portal{
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: var(--radius);
-      background: rgba(10,12,18,.40);
-      overflow:hidden; position:relative;
-      transition: all .2s ease;
-      min-height: 260px;
-    }
-    .portal:hover{ transform: translateY(-3px); border-color: rgba(255,255,255,.3); }
+#gameWrapper{
+  margin-top:80px;
+  padding:40px 0 80px;
+  text-align:center;
+  border-top:1px solid rgba(255,255,255,.15);
+}
 
-    .portalTop{ height: 118px; position:relative; border-bottom: 1px solid rgba(255,255,255,.10); }
-    .portalTop::before{
-      content:""; position:absolute; inset:0;
-      background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.62));
-    }
+#gameCanvas{
+  background:#111;
+  border:1px solid rgba(255,255,255,.2);
+  display:block;
+  margin:20px auto;
+}
 
-    /* --- 核心修改：图标容器纠偏与放大 --- */
-    .halo {
-      position: absolute;
-      width: 90px;       /* 增加容器宽度 */
-      height: 90px;      /* 增加容器高度 */
-      border-radius: 50%;
-      left: 50%;
-      top: 80px;
-      transform: translate(-50%, -50%);
-      background: rgba(15,18,25,.92); /* 容器底色 */
-      border: 1px solid rgba(255,255,255,.35);
-      box-shadow: 0 12px 30px rgba(0,0,0,.45);
-      /* 关键：使用 Grid 让图标绝对居中，解决“歪了”的问题 */
-      display: grid;
-      place-items: center;
-      z-index: 2;
-    }
+#score{
+  margin-top:10px;
+  opacity:.8;
+}
 
-    /* --- 核心修改：图标本身放大与加粗 --- */
-    .halo svg {
-      width: 42px;       /* 图标放大 */
-      height: 42px;      /* 图标放大 */
-      opacity: .95;
-    }
-    .halo svg path, .halo svg circle {
-      stroke-width: 1.6px; /* 增加线条粗细，更明显 */
-      stroke: rgba(255,255,255,1); /* 纯白线条 */
-    }
-
-    .portalBody{ padding: 52px 16px 16px; text-align:center; }
-    .portalBody h3{ margin:0; font-size: 18px; letter-spacing:.22em; font-weight: 800; }
-    .portalBody p{ margin: 10px auto 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
-    
-    .go{
-      margin-top: 14px; display:inline-flex; align-items:center; gap:8px;
-      padding: 9px 12px; border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.05);
-      color: rgba(255,255,255,.90); font-size: 12px;
-    }
-
-    /* ===== 下方信息区域（最新更新/便捷入口） ===== */
-    .updates{
-      margin-top: 18px; border-top: 1px solid rgba(255,255,255,.10);
-      padding-top: 16px; display:grid;
-      grid-template-columns: 1fr 1fr; gap: 14px;
-    }
-    .panel{
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.04);
-      padding: 14px;
-    }
-    /* 标题大小保持不变 */
-    .panel h4{ margin: 0 0 8px; font-size: 13px; letter-spacing: .18em; color: #fff; }
-
-    /* --- 核心修改：将内容字体调小 --- */
-    .panel p { 
-      margin:0; 
-      font-size: 11.5px; /* 比 13px 的标题更小 */
-      color: var(--muted); 
-      line-height: 1.8; 
-    }
-
-    .quickLinks{ display:grid; gap:8px; margin-top: 10px; }
-    .linkRow{
-      display:flex; align-items:center; justify-content:space-between;
-      padding: 8px 12px; border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.1);
-      background: rgba(255,255,255,.02);
-      transition: all .2s;
-    }
-    .linkRow:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.2); }
-    
-    /* 链接文字改小 */
-    .linkRow span{ font-size: 11.5px; font-weight: 700; color: rgba(255,255,255,.8); }
-    .linkRow em{ font-style:normal; color: rgba(255,255,255,.4); font-size: 10px; }
-
-    @media (max-width: 760px){
-      .portals{ grid-template-columns: 1fr; }
-      .updates{ grid-template-columns: 1fr; }
-      .nav{ display:none; }
-    }
-  </style>
+</style>
 </head>
 
 <body>
-  <main class="hero">
-    <div class="frame">
-      <div class="corner tl"></div><div class="corner tr"></div>
-      <div class="corner bl"></div><div class="corner br"></div>
 
-      <div class="inner">
-        <div class="topbar">
-          <div class="mark">
-            <div class="seal">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2l2.2 6.2L21 10l-5 3.7L17.8 20 12 16.7 6.2 20 8 13.7 3 10l6.8-1.8L12 2z"/></svg>
-            </div>
-            <div class="markText">
-              <b>踏莎行</b>
-              <small>仙侠世界观设定集合站</small>
-            </div>
-          </div>
-          <nav class="nav">
-            <a class="pill" href="log/index.html">日志</a>
-            <a class="pill" href="nav/index.html">导航</a>
-            <a class="pill" href="about/index.html">说明</a>
-          </nav>
-        </div>
+<div class="hero">
+  <div class="mainTitle">几度春秋</div>
+  <div class="subTitle">— 流水落花春去也，天上人间 —</div>
+</div>
 
-        <section class="titleBlock">
-          <h1 class="mainTitle">踏莎行</h1>
-          <p class="subTitle">— 流水落花春去也，天上人间 —</p>
-          <div class="divider"><span>欢迎来到东方仙侠世界观设定集合站</span></div>
-        </section>
+<!-- =====================
+     小游戏区域
+===================== -->
 
-        <section class="portals">
-          <a class="portal world" href="world/index.html">
-            <div class="portalTop" style="background: url('assets/img/portal-world.jpg') center/cover;"></div>
-            <div class="halo">
-              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/></svg>
-            </div>
-            <div class="portalBody">
-              <h3>世界观</h3>
-              <p>包含世界观下的基本设定信息、势力介绍、名词解释等。</p>
-              <span class="go">进入 · World</span>
-            </div>
-          </a>
+<div id="gameWrapper">
+  <h2>人间小试</h2>
+  <p>按 空格键 跳跃 · 躲避劫难</p>
+  <canvas id="gameCanvas" width="600" height="200"></canvas>
+  <div id="score">得分：0</div>
+</div>
 
-          <a class="portal characters" href="characters/index.html">
-            <div class="portalTop" style="background: url('assets/img/portal-characters.jpg') center/cover;"></div>
-            <div class="halo">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            </div>
-            <div class="portalBody">
-              <h3>人物</h3>
-              <p>包含人物设定、关系网等。</p>
-              <span class="go">进入 · Characters</span>
-            </div>
-          </a>
+<script>
 
-          <a class="portal other" href="other/index.html">
-            <div class="portalTop" style="background: url('assets/img/portal-other.jpg') center/cover;"></div>
-            <div class="halo">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            </div>
-            <div class="portalBody">
-              <h3>其他</h3>
-              <p>小故事、碎碎念和堆一些稿件。</p>
-              <span class="go">进入 · Other</span>
-            </div>
-          </a>
-        </section>
+/* =====================
+   极简恐龙式小游戏
+===================== */
 
-        <section class="updates">
-          <div class="panel">
-            <h4>最新更新</h4>
-            <p>【新增】：框架亮度与字体优化</p>
-          </div>
-          <div class="panel">
-            <h4>便捷入口</h4>
-            <div class="quickLinks">
-              <a class="linkRow" href="gallery/index.html"><span>画廊</span><em>Gallery</em></a>
-              <a class="linkRow" href="characters/quick.html"><span>人物速查</span><em>Quick</em></a>
-              <a class="linkRow" href="contact/index.html"><span>联系我们</span><em>Contact</em></a>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
-  </main>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+let player = {
+  x:50,
+  y:150,
+  width:20,
+  height:20,
+  velocityY:0,
+  jumping:false
+};
+
+let gravity = 0.6;
+let obstacle = {
+  x:600,
+  y:160,
+  width:20,
+  height:40
+};
+
+let score = 0;
+let gameOver = false;
+
+function drawPlayer(){
+  ctx.fillStyle = "white";
+  ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+function drawObstacle(){
+  ctx.fillStyle = "#d6b36a";
+  ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+}
+
+function update(){
+  if(gameOver) return;
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // 重力
+  player.velocityY += gravity;
+  player.y += player.velocityY;
+
+  if(player.y >= 150){
+    player.y = 150;
+    player.jumping = false;
+  }
+
+  // 障碍移动
+  obstacle.x -= 5;
+  if(obstacle.x < -20){
+    obstacle.x = 600;
+    score++;
+    document.getElementById("score").innerText = "得分：" + score;
+  }
+
+  // 碰撞检测
+  if(
+    player.x < obstacle.x + obstacle.width &&
+    player.x + player.width > obstacle.x &&
+    player.y < obstacle.y + obstacle.height &&
+    player.y + player.height > obstacle.y
+  ){
+    gameOver = true;
+    document.getElementById("score").innerText += " · 劫难已至";
+  }
+
+  drawPlayer();
+  drawObstacle();
+
+  requestAnimationFrame(update);
+}
+
+document.addEventListener("keydown",function(e){
+  if(e.code === "Space" && !player.jumping){
+    player.velocityY = -10;
+    player.jumping = true;
+  }
+});
+
+update();
+
+</script>
+
 </body>
 </html>
